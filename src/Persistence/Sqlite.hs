@@ -4,6 +4,7 @@ module Persistence.Sqlite (
   EntryField,
   ColumnField,
   addEntry,
+  moveEntry,
   getEntries,
   addColumn,
 ) where
@@ -44,6 +45,18 @@ getEntries :: IO [EntryField]
 getEntries = do
   conn <- open db
   query_ conn "SELECT * FROM Entry"
+
+moveEntry :: Int -> T.Text -> IO (Either String ())
+moveEntry entryID colName = do
+  conn <- open db
+  cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
+  case cols of
+    [Only col] -> do
+      result <-
+        execute
+          conn "UPDATE (SELECT * FROM Entry WHERE (entryID = ?)) SET entryColumn = ?" (entryID, col)
+      return $ Right result
+    _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
 
 addColumn :: T.Text -> IO (Either String ())
 addColumn colName = do

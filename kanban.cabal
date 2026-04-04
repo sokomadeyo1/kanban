@@ -28,6 +28,7 @@ library
       Domain
       Persistence.Sqlite
       Usecase.GetEntries
+      Usecase.MoveEntry
       Usecase.NewColumn
       Usecase.NewEntry
   other-modules:
