@@ -49,8 +49,13 @@ run = do
         Left s -> print s
         Right handler -> handle handler
 
--- TODO: write smarter cmdSplit
 cmdSplit :: String -> UnparsedCall
 cmdSplit cmdline = UnparsedCall (readMaybe $ argv !! 0) (Argv $ [concat . tail argv])
  where
-  argv = split ' ' cmdline
+  (cmd, argv1) = (takeWhile (/= ' ') cmdline, dropWhile (== ' ') $ dropWhile (/= ' ') cmdline)
+  argv = parseQuotes argv1
+
+parseQuotes :: String -> [String]
+parseQuotes "" = []
+parseQuotes ('"':xs) = takeWhile (/= '"') xs : parseQuotes $ drop 1 $ dropWhile (/= '"') xs
+parseQuotex xs = takeWhile (/= ' ') xs : parseQuotes $ dropWhile (== ' ') $ dropWhile (/= ' ') xs
