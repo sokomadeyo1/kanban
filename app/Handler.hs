@@ -1,4 +1,4 @@
-module Handler (Handler, handle) where
+module Handler (Handler(..), handle) where
 
 import qualified Data.Text as T
 import Usecase.GetEntries (getEntries)
@@ -13,7 +13,23 @@ data Handler
   | NewColumn T.Text
 
 handle :: Handler -> IO ()
-handle GetEntries = getEntries
-handle (NewEntry title desc) = newEntry title desc
-handle (MoveEntry entryID colName) = moveEntry entryID colName
-handle (NewColumn colName) = newColumnt colName
+handle GetEntries = do
+  result <- getEntries
+  case result of
+    Left e -> print e
+    Right r -> print r
+handle (NewEntry title desc) = do
+  result <- newEntry title desc
+  case result of
+    Left e -> print e
+    Right r -> print r
+handle (MoveEntry entryID colName) = do
+  result <- moveEntry entryID colName
+  case result of
+    Left e -> print e
+    Right r -> print r
+handle (NewColumn colName) = do
+  result <- newColumn colName
+  case result of
+    Left e -> print e
+    Right r -> print r

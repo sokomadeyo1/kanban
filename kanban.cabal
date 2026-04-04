@@ -25,7 +25,12 @@ source-repository head
 
 library
   exposed-modules:
-      Model
+      Domain
+      Persistence.Sqlite
+      Usecase.GetEntries
+      Usecase.MoveEntry
+      Usecase.NewColumn
+      Usecase.NewEntry
   other-modules:
       Paths_kanban
   autogen-modules:
@@ -36,6 +41,8 @@ library
   build-depends:
       base >=4.7 && <5
     , ghc
+    , shellwords
+    , sqlite-simple
     , text
   default-language: Haskell2010
 
@@ -54,6 +61,8 @@ executable kanban-exe
       base >=4.7 && <5
     , ghc
     , kanban
+    , shellwords
+    , sqlite-simple
     , text
   default-language: Haskell2010
 
@@ -71,5 +80,7 @@ test-suite kanban-test
       base >=4.7 && <5
     , ghc
     , kanban
+    , shellwords
+    , sqlite-simple
     , text
   default-language: Haskell2010

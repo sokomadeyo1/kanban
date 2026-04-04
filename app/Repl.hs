@@ -1,38 +1,40 @@
 module Repl (run) where
 
 import GHC.Utils.Misc (split)
-import qualified Handler (Handler (..), handle)
+import qualified Handler
 import Text.Read (readMaybe)
+import qualified Data.Text as T
+import qualified ShellWords
 
 prompt = "==> "
 argErrStr = "Insufficient number of arguments"
 cmdNotFound = "Command not found: "
 
-newtype CmdString
+data CmdString
   = GetBoard
   | AddEntry
   | MoveEntry
   | AddColumn
-  deriving (Read)
-newtype Argv = Argv [String]
+  deriving (Read, Show)
+newtype Argv = Argv [T.Text]
 data UnparsedCall = UnparsedCall (Maybe CmdString) Argv
 
-parse :: UnparsedCall -> Either String Handler
+parse :: UnparsedCall -> Either String Handler.Handler
 parse (UnparsedCall cmd argv)
   = case cmd of
-    Just cmdstr -> checkArgv Argv cmdstr
-    Nothing -> Left $ cmdNotFound ++ cmd
+    Just cmdstr -> checkArgv argv cmdstr
+    Nothing -> Left $ cmdNotFound ++ show cmd
 
-checkArgv :: Argv -> CmdString -> Either String Handler
+checkArgv :: Argv -> CmdString -> Either String Handler.Handler
 checkArgv (Argv argv) cmdstr = case cmdstr of
   GetBoard -> Right Handler.GetEntries
   AddEntry -> if (length argv >= 2)
     then Right $ Handler.NewEntry (argv !! 0) (argv !! 1)
     else Left $ argErrStr
   MoveEntry -> if (length argv >= 2)
-    then Right $ Handler.MoveEntry (read argv !! 0 :: Int) (argv !! 1)
+    then Right $ Handler.MoveEntry (read $ T.unpack (argv !! 0) :: Int) (argv !! 1)
     else Left $ argErrStr
-  AddColumnt -> if (length argv >= 1)
+  AddColumn -> if (length argv >= 1)
     then Right $ Handler.NewColumn (argv !! 0)
     else Left $ argErrStr
 
@@ -47,15 +49,10 @@ run = do
       let parsed = parse unparsed
       case parsed of
         Left s -> print s
-        Right handler -> handle handler
+        Right handler -> Handler.handle handler
 
 cmdSplit :: String -> UnparsedCall
-cmdSplit cmdline = UnparsedCall (readMaybe $ argv !! 0) (Argv $ [concat . tail argv])
+cmdSplit cmdline = UnparsedCall (readMaybe $ cmd) (Argv $ map T.pack $ argv)
  where
   (cmd, argv1) = (takeWhile (/= ' ') cmdline, dropWhile (== ' ') $ dropWhile (/= ' ') cmdline)
-  argv = parseQuotes argv1
-
-parseQuotes :: String -> [String]
-parseQuotes "" = []
-parseQuotes ('"':xs) = takeWhile (/= '"') xs : parseQuotes $ drop 1 $ dropWhile (/= '"') xs
-parseQuotex xs = takeWhile (/= ' ') xs : parseQuotes $ dropWhile (== ' ') $ dropWhile (/= ' ') xs
+  Right argv = ShellWords.parse argv1
