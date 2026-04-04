@@ -1,9 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Persistence.Sqlite (
+  EntryField,
+  ColumnField,
   addEntry,
   getEntries,
-  EntryField,
+  addColumn,
 ) where
 
 import qualified Data.Text as T
@@ -13,21 +15,42 @@ import Database.SQLite.Simple
 db :: String
 db = "data/dev.db"
 
--- TODO: Import data types from Model module
-data EntryField = EntryField Int T.Text T.Text deriving (Show)
+-- TODO: Import data types from Domain module
+data EntryField = EntryField Int T.Text T.Text Int deriving (Show)
+data ColumnField = ColumnField Int T.Text deriving (Show)
 
 instance FromRow EntryField where
-  fromRow = EntryField <$> field <*> field <*> field
+  fromRow = EntryField <$> field <*> field <*> field <*> field
 
-addEntry :: T.Text -> T.Text -> IO ()
-addEntry title desc = do
+instance FromRow ColumnField where
+  fromRow = ColumnField <$> field <*> field
+
+-- TODO: Decide when to use Text and when to use String
+addEntry :: T.Text -> T.Text -> T.Text -> IO (Either String ())
+addEntry title desc colName = do
   conn <- open db
-  execute
-    conn
-    "INSERT INTO Entry (entryTitle, entryDesc) values (?, ?)"
-    (title, desc)
+  cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
+  case cols of
+    [Only i] -> do
+      result <-
+        execute
+          conn
+          "INSERT INTO Entry (entryTitle, entryDesc, entryColumn) values (?, ?, ?)"
+          (title, desc, i)
+      return $ Right result
+    _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
 
 getEntries :: IO [EntryField]
 getEntries = do
   conn <- open db
   query_ conn "SELECT * FROM Entry"
+
+addColumn :: T.Text -> IO (Either String ())
+addColumn colName = do
+  conn <- open db
+  cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
+  case cols of
+    [] -> do
+      result <- execute conn "INSERT INTO Column (columnTitle) values (?)" (Only colName)
+      return $ Right result
+    _ -> return $ Left $ "Column " ++ (T.unpack colName) ++ " already exists"

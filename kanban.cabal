@@ -28,6 +28,7 @@ library
       Domain
       Persistence.Sqlite
       Usecase.GetEntries
+      Usecase.NewColumn
       Usecase.NewEntry
   other-modules:
       Paths_kanban

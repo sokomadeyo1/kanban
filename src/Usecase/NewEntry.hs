@@ -1,8 +1,13 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Usecase.NewEntry (newEntry) where
 
-import Persistence.Sqlite (addEntry)
 import qualified Data.Text as T
+import qualified Persistence.Sqlite as Persistence
 
-newEntry :: T.Text -> T.Text -> IO ()
+defaultColumn :: T.Text
+defaultColumn = "Backlog" :: T.Text
+
+newEntry :: T.Text -> T.Text -> IO (Either String ())
 newEntry title desc = do
-  addEntry title desc
+  Persistence.addEntry title desc defaultColumn
