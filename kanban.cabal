@@ -1,0 +1,70 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.38.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           kanban
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sokomadeyo1/kanban#readme>
+homepage:       https://github.com/sokomadeyo1/kanban#readme
+bug-reports:    https://github.com/sokomadeyo1/kanban/issues
+author:         Tihonov Yuri
+maintainer:     sokomadeyo1@proton.me
+copyright:      2026 Tihonov Yuri
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/sokomadeyo1/kanban
+
+library
+  exposed-modules:
+      Model
+  other-modules:
+      Paths_kanban
+  autogen-modules:
+      Paths_kanban
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , text
+  default-language: Haskell2010
+
+executable kanban-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_kanban
+  autogen-modules:
+      Paths_kanban
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , kanban
+    , text
+  default-language: Haskell2010
+
+test-suite kanban-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_kanban
+  autogen-modules:
+      Paths_kanban
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , kanban
+    , text
+  default-language: Haskell2010
