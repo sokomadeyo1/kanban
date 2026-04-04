@@ -1,4 +1,4 @@
-module Model where
+module Domain where
 
 import qualified Data.Text as T
 
