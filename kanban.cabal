@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Model
+      Domain
       Persistence.Sqlite
       Usecase.GetEntries
       Usecase.NewEntry
