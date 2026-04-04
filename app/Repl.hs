@@ -41,6 +41,7 @@ checkArgv (Argv argv) cmdstr = case cmdstr of
 run :: IO ()
 run = do
   putStr prompt
+  hFlush stdout
   cmdline <- getLine
   if (length cmdline) <= 1
     then return ()
