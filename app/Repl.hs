@@ -5,6 +5,7 @@ import qualified Handler
 import Text.Read (readMaybe)
 import qualified Data.Text as T
 import qualified ShellWords
+import System.IO (hFlush, stdout)
 
 prompt = "==> "
 argErrStr = "Insufficient number of arguments"
@@ -15,6 +16,7 @@ data CmdString
   | AddEntry
   | MoveEntry
   | AddColumn
+  | Help
   deriving (Read, Show)
 newtype Argv = Argv [T.Text]
 data UnparsedCall = UnparsedCall (Maybe CmdString) Argv
@@ -37,6 +39,9 @@ checkArgv (Argv argv) cmdstr = case cmdstr of
   AddColumn -> if (length argv >= 1)
     then Right $ Handler.NewColumn (argv !! 0)
     else Left $ argErrStr
+  Help -> if (length argv >= 1)
+    then Left $ usage $ readMaybe $ T.unpack (argv !! 0)
+    else Left $ help
 
 run :: IO ()
 run = do
@@ -56,4 +61,24 @@ cmdSplit :: String -> UnparsedCall
 cmdSplit cmdline = UnparsedCall (readMaybe $ cmd) (Argv $ map T.pack $ argv)
  where
   (cmd, argv1) = (takeWhile (/= ' ') cmdline, dropWhile (== ' ') $ dropWhile (/= ' ') cmdline)
-  Right argv = ShellWords.parse argv1
+  argv = case ShellWords.parse argv1 of
+    Right arg -> arg
+    Left s -> [s]
+
+help :: String
+help = unlines $ map helpCmd [GetBoard, AddEntry, MoveEntry, AddColumn, Help]
+
+helpCmd :: CmdString -> String
+helpCmd GetBoard  = "GetBoard  -- show current board's contents"
+helpCmd AddEntry  = "AddEntry  -- create a new entry"
+helpCmd MoveEntry = "MoveEntry -- move an entry to another column"
+helpCmd AddColumn = "AddColumn -- create a new column"
+helpCmd Help      = "Help      -- show this message. Use help <cmd> for more details"
+
+usage :: Maybe CmdString -> String
+usage (Just GetBoard)  = "usage: GetBoard"
+usage (Just AddEntry)  = "usage: AddEntry <entry title> [<entry description>]"
+usage (Just MoveEntry) = "usage: MoveEntry <entry id> <column name>"
+usage (Just AddColumn) = "usage: AddColumn <column name>"
+usage (Just Help)      = "usage: help [<cmd>]"
+usage Nothing          = help
