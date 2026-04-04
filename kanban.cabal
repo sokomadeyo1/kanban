@@ -40,6 +40,8 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , ghc
+    , shellwords
     , sqlite-simple
     , text
   default-language: Haskell2010
@@ -47,6 +49,8 @@ library
 executable kanban-exe
   main-is: Main.hs
   other-modules:
+      Handler
+      Repl
       Paths_kanban
   autogen-modules:
       Paths_kanban
@@ -55,7 +59,9 @@ executable kanban-exe
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , ghc
     , kanban
+    , shellwords
     , sqlite-simple
     , text
   default-language: Haskell2010
@@ -72,7 +78,9 @@ test-suite kanban-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , ghc
     , kanban
+    , shellwords
     , sqlite-simple
     , text
   default-language: Haskell2010

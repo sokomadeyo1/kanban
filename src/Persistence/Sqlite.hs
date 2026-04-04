@@ -41,10 +41,11 @@ addEntry title desc colName = do
       return $ Right result
     _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
 
-getEntries :: IO [EntryField]
+getEntries :: IO (Either String [EntryField])
 getEntries = do
   conn <- open db
-  query_ conn "SELECT * FROM Entry"
+  result <- query_ conn "SELECT * FROM Entry"
+  return $ Right result
 
 moveEntry :: Int -> T.Text -> IO (Either String ())
 moveEntry entryID colName = do
@@ -54,7 +55,7 @@ moveEntry entryID colName = do
     [Only col] -> do
       result <-
         execute
-          conn "UPDATE (SELECT * FROM Entry WHERE (entryID = ?)) SET entryColumn = ?" (entryID, col)
+          conn "UPDATE Entry SET entryColumn = ? WHERE (entryID = ?)" (col, entryID)
       return $ Right result
     _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
 
