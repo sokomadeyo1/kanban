@@ -3,8 +3,9 @@
 module PrettyPrint (Pretty, pretty) where
 
 import qualified Data.Text as T
-import Domain.Entry
 import Domain.Column
+import Domain.Entry
+import Domain.Tag
 
 class Pretty a where
   pretty :: a -> T.Text
@@ -15,6 +16,9 @@ instance Pretty Entry where
 
 instance Pretty Column where
   pretty (Column _ name) = name
+
+instance Pretty Tag where
+  pretty (Tag _ name) = T.concat ["<", name, ">"]
 
 instance (Pretty a) => Pretty [a] where
   pretty = T.unlines . map pretty

@@ -12,6 +12,7 @@ import Usecase.NewColumn
 import Usecase.NewEntry
 import Usecase.GetColumns
 import Usecase.NewTag
+import Usecase.GetTags
 
 data Handler
   = GetEntries
@@ -20,6 +21,7 @@ data Handler
   | NewColumn T.Text
   | GetColumns
   | NewTag T.Text
+  | GetTags
 
 handle :: Handler -> IO ()
 handle GetEntries = do
@@ -52,3 +54,8 @@ handle (NewTag tagName) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new tag:", tagName]
+handle GetTags = do
+  result <- getTags
+  case result of
+    Left e -> TIO.putStrLn e
+    Right tags -> TIO.putStr $ pretty tags

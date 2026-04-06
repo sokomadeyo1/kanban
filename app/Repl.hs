@@ -17,6 +17,7 @@ argErrStr = "Insufficient number of arguments"
 cmdNotFound :: T.Text
 cmdNotFound = "Command not found"
 cmdsAll :: [CmdString]
+cmdsAll = [GetBoard, AddEntry, MoveEntry, AddColumn, GetColumns, NewTag, GetTags, Help]
 
 data CmdString
   = GetBoard
@@ -25,6 +26,7 @@ data CmdString
   | AddColumn
   | GetColumns
   | NewTag
+  | GetTags
   | Help
   | Other T.Text
   deriving (Read, Show)
@@ -51,6 +53,7 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
     if (length argv >= 1)
       then Right $ Handler.NewTag (argv !! 0)
       else Left $ argErrStr
+  GetTags -> Right Handler.GetTags
   Help ->
     if (length argv >= 1)
       then Left $ usage $ readMaybe $ T.unpack (argv !! 0)
@@ -94,6 +97,7 @@ helpCmd MoveEntry  = "MoveEntry  -- move an entry to another column"
 helpCmd AddColumn  = "AddColumn  -- create a new column"
 helpCmd GetColumns = "GetColumns -- show a list of all columns"
 helpCmd NewTag     = "NewTag     -- create a new tag"
+helpCmd GetTags    = "GetTags    -- show a list of all tags"
 helpCmd Help       = "Help       -- show this message. Use help <cmd> for more details"
 helpCmd (Other _)  = ""
 
@@ -104,6 +108,7 @@ usage (Just MoveEntry)   = "usage: MoveEntry <entry id> <column name>"
 usage (Just AddColumn)   = "usage: AddColumn <column name>"
 usage (Just GetColumns)  = "usage: GetColumns"
 usage (Just NewTag)      = "usage: NewTag <tag name>"
+usage (Just GetTags)     = "usage: GetTags"
 usage (Just Help)        = "usage: help [<cmd>]"
 usage Nothing            = help
 usage (Just (Other cmd)) = help

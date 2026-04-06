@@ -35,6 +35,7 @@ library
       Persistence.Sqlite
       Usecase.GetColumns
       Usecase.GetEntries
+      Usecase.GetTags
       Usecase.MoveEntry
       Usecase.NewColumn
       Usecase.NewEntry

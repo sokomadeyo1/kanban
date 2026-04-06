@@ -8,12 +8,14 @@ module Persistence.Sqlite (
   addColumn,
   getColumns,
   newTag,
+  getTags,
 ) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple
-import Domain.Entry
 import Domain.Column
+import Domain.Entry
+import Domain.Tag
 
 -- TODO: Implement reading db file path in a more appropriate place
 db :: String
@@ -89,3 +91,10 @@ newTag tagName = do
     "INSERT INTO Tag (tagName) VALUES (?)"
     (Only tagName)
   return $ Right result
+
+getTags :: IO (Either T.Text [Tag])
+getTags = do
+  conn <- open db
+  tags <- query_ conn
+    "SELECT * FROM Tag"
+  return $ Right tags
