@@ -119,6 +119,6 @@ getEntriesTags :: EntryID -> IO (Either T.Text [Tag])
 getEntriesTags entryid = do
   conn <- open db
   tags <- query conn
-    "SELECT Tag.tagID, tagName FROM Tag JOIN EntriesTags WHERE entryID = ?"
+    "SELECT Tag.tagID, tagName FROM Tag JOIN EntriesTags ON Tag.tagID = EntriesTags.tagID WHERE entryID = ?"
     (Only entryid)
   return $ Right tags
