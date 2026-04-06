@@ -1,8 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Persistence.Sqlite (
-  EntryField,
-  ColumnField,
   addEntry,
   moveEntry,
   getEntries,
@@ -11,20 +9,11 @@ module Persistence.Sqlite (
 
 import qualified Data.Text as T
 import Database.SQLite.Simple
+import qualified Domain
 
 -- TODO: Implement reading db file path in a more appropriate place
 db :: String
 db = "data/dev.db"
-
--- TODO: Import data types from Domain module
-data EntryField = EntryField Int T.Text T.Text Int deriving (Show)
-data ColumnField = ColumnField Int T.Text deriving (Show)
-
-instance FromRow EntryField where
-  fromRow = EntryField <$> field <*> field <*> field <*> field
-
-instance FromRow ColumnField where
-  fromRow = ColumnField <$> field <*> field
 
 -- TODO: Decide when to use Text and when to use String
 addEntry :: T.Text -> T.Text -> T.Text -> IO (Either String ())
@@ -41,10 +30,10 @@ addEntry title desc colName = do
       return $ Right result
     _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
 
-getEntries :: IO (Either String [EntryField])
+getEntries :: IO (Either String [Domain.Entry])
 getEntries = do
   conn <- open db
-  result <- query_ conn "SELECT * FROM Entry"
+  result <- query_ conn "SELECT entryID, entryTitle, entryDesc, entryColumn, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
   return $ Right result
 
 moveEntry :: Int -> T.Text -> IO (Either String ())
