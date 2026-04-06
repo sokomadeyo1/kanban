@@ -1,4 +1,7 @@
-module Domain.User (User) where
+module Domain.User (
+  User (..),
+  UserID (..),
+) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow

@@ -1,4 +1,7 @@
-module Domain.Tag (Tag) where
+module Domain.Tag (
+  Tag (..),
+  TagID (..),
+) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
