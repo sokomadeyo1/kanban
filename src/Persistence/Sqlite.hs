@@ -35,7 +35,7 @@ addEntry title desc colName = do
 getEntries :: IO (Either T.Text [Entry])
 getEntries = do
   conn <- open db
-  result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
+  result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID ORDER BY columnID"
   return $ Right result
 
 getOneEntry :: EntryID -> IO (Either T.Text Entry)
