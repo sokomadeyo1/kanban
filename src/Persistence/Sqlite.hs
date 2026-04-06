@@ -9,6 +9,7 @@ module Persistence.Sqlite (
   getColumns,
   newTag,
   getTags,
+  tagEntry,
 ) where
 
 import qualified Data.Text as T
@@ -17,7 +18,6 @@ import Domain.Column
 import Domain.Entry
 import Domain.Tag
 
--- TODO: Implement reading db file path in a more appropriate place
 db :: String
 db = "data/dev.db"
 
@@ -56,7 +56,7 @@ moveEntry entryID colName = do
   conn <- open db
   cols <- query conn
     "SELECT columnID FROM Column WHERE (columnTitle = ?)"
-    (Only colName) :: IO [Only Int]
+    (Only colName) :: IO [Only ColumnID]
   case cols of
     [Only col] -> do
       result <- execute conn
@@ -98,3 +98,17 @@ getTags = do
   tags <- query_ conn
     "SELECT * FROM Tag"
   return $ Right tags
+
+tagEntry :: EntryID -> T.Text -> IO (Either T.Text ())
+tagEntry entryid tagname = do
+  conn <- open db
+  tags <- query conn
+    "SELECT tagID FROM Tag WHERE tagName = ?"
+    (Only tagname) :: IO [Only TagID]
+  case tags of
+    [Only tag] -> do
+      result <- execute conn
+        "INSERT INTO EntriesTags (tagID, entryID) VALUES (?, ?)"
+        (tag, entryid)
+      return $ Right result
+    _ -> return $ Left $ T.unwords ["No tag named", tagname, "found"]

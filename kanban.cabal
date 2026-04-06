@@ -40,6 +40,7 @@ library
       Usecase.NewColumn
       Usecase.NewEntry
       Usecase.NewTag
+      Usecase.TagEntry
   other-modules:
       Paths_kanban
   autogen-modules:

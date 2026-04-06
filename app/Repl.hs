@@ -4,11 +4,11 @@ module Repl (run) where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import Domain.Entry
 import qualified Handler
 import qualified ShellWords
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
-import Domain.Entry
 
 prompt :: T.Text
 prompt = "==> "
@@ -17,7 +17,17 @@ argErrStr = "Insufficient number of arguments"
 cmdNotFound :: T.Text
 cmdNotFound = "Command not found"
 cmdsAll :: [CmdString]
-cmdsAll = [GetBoard, AddEntry, MoveEntry, AddColumn, GetColumns, NewTag, GetTags, Help]
+cmdsAll =
+  [ GetBoard
+  , AddEntry
+  , MoveEntry
+  , AddColumn
+  , GetColumns
+  , NewTag
+  , GetTags
+  , TagEntry
+  , Help
+  ]
 
 data CmdString
   = GetBoard
@@ -27,6 +37,7 @@ data CmdString
   | GetColumns
   | NewTag
   | GetTags
+  | TagEntry
   | Help
   | Other T.Text
   deriving (Read, Show)
@@ -54,6 +65,10 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       then Right $ Handler.NewTag (argv !! 0)
       else Left $ argErrStr
   GetTags -> Right Handler.GetTags
+  TagEntry ->
+    if (length argv >= 2)
+      then Right $ Handler.TagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      else Left $ argErrStr
   Help ->
     if (length argv >= 1)
       then Left $ usage $ readMaybe $ T.unpack (argv !! 0)
@@ -98,6 +113,7 @@ helpCmd AddColumn  = "AddColumn  -- create a new column"
 helpCmd GetColumns = "GetColumns -- show a list of all columns"
 helpCmd NewTag     = "NewTag     -- create a new tag"
 helpCmd GetTags    = "GetTags    -- show a list of all tags"
+helpCmd TagEntry   = "TagEntry   -- add a tag to the entry"
 helpCmd Help       = "Help       -- show this message. Use help <cmd> for more details"
 helpCmd (Other _)  = ""
 
@@ -109,6 +125,7 @@ usage (Just AddColumn)   = "usage: AddColumn <column name>"
 usage (Just GetColumns)  = "usage: GetColumns"
 usage (Just NewTag)      = "usage: NewTag <tag name>"
 usage (Just GetTags)     = "usage: GetTags"
+usage (Just TagEntry)    = "usage: TagEntry <entry id> <tag name>"
 usage (Just Help)        = "usage: help [<cmd>]"
 usage Nothing            = help
 usage (Just (Other cmd)) = help
