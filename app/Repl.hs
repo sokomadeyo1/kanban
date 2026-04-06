@@ -22,6 +22,7 @@ data CmdString
   | MoveEntry
   | AddColumn
   | Help
+  | Other T.Text
   deriving (Read, Show)
 newtype Argv = Argv [T.Text]
 data UnparsedCall = UnparsedCall (Maybe CmdString) Argv
@@ -51,6 +52,7 @@ checkArgv (Argv argv) cmdstr = case cmdstr of
     if (length argv >= 1)
       then Left $ usage $ readMaybe $ T.unpack (argv !! 0)
       else Left $ help
+  Other err -> Left err
 
 run :: IO ()
 run = do
@@ -63,16 +65,19 @@ run = do
       let unparsed = cmdSplit cmdline
       let parsed = parse unparsed
       case parsed of
-        Left s -> TIO.putStr s
+        Left s -> TIO.putStrLn s
         Right handler -> Handler.handle handler
 
 cmdSplit :: String -> UnparsedCall
-cmdSplit cmdline = UnparsedCall (readMaybe $ cmd) (Argv $ map T.pack $ argv)
+cmdSplit cmdline = case (readMaybe cmd :: Maybe CmdString) of
+  Nothing -> UnparsedCall (Just $ Other bad) (Argv [])
+  x -> UnparsedCall x $ Argv $ map T.pack argv
  where
   (cmd, argv1) = (takeWhile (/= ' ') cmdline, dropWhile (== ' ') $ dropWhile (/= ' ') cmdline)
   argv = case ShellWords.parse argv1 of
     Right arg -> arg
     Left s -> [s]
+  bad = badCmd $ T.pack cmd
 
 help :: T.Text
 help = T.unlines $ map helpCmd [GetBoard, AddEntry, MoveEntry, AddColumn, Help]
@@ -83,11 +88,16 @@ helpCmd AddEntry  = "AddEntry  -- create a new entry"
 helpCmd MoveEntry = "MoveEntry -- move an entry to another column"
 helpCmd AddColumn = "AddColumn -- create a new column"
 helpCmd Help      = "Help      -- show this message. Use help <cmd> for more details"
+helpCmd (Other _) = ""
 
 usage :: Maybe CmdString -> T.Text
-usage (Just GetBoard)  = "usage: GetBoard"
-usage (Just AddEntry)  = "usage: AddEntry <entry title> [<entry description>]"
-usage (Just MoveEntry) = "usage: MoveEntry <entry id> <column name>"
-usage (Just AddColumn) = "usage: AddColumn <column name>"
-usage (Just Help)      = "usage: help [<cmd>]"
-usage Nothing          = help
+usage (Just GetBoard)    = "usage: GetBoard"
+usage (Just AddEntry)    = "usage: AddEntry <entry title> [<entry description>]"
+usage (Just MoveEntry)   = "usage: MoveEntry <entry id> <column name>"
+usage (Just AddColumn)   = "usage: AddColumn <column name>"
+usage (Just Help)        = "usage: help [<cmd>]"
+usage Nothing            = help
+usage (Just (Other cmd)) = cmdNotFound
+
+badCmd :: T.Text -> T.Text
+badCmd = T.concat . ([cmdNotFound, ": "] ++) . (: [])
