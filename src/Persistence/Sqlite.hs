@@ -15,8 +15,7 @@ import Domain.Entry
 db :: String
 db = "data/dev.db"
 
--- TODO: Decide when to use Text and when to use String
-addEntry :: T.Text -> T.Text -> T.Text -> IO (Either String ())
+addEntry :: T.Text -> T.Text -> T.Text -> IO (Either T.Text ())
 addEntry title desc colName = do
   conn <- open db
   cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
@@ -28,15 +27,15 @@ addEntry title desc colName = do
           "INSERT INTO Entry (entryTitle, entryDesc, entryColumn) values (?, ?, ?)"
           (title, desc, i)
       return $ Right result
-    _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
+    _ -> return $ Left $ T.unwords ["No column named", colName, "found"]
 
-getEntries :: IO (Either String [Entry])
+getEntries :: IO (Either T.Text [Entry])
 getEntries = do
   conn <- open db
   result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
   return $ Right result
 
-moveEntry :: Int -> T.Text -> IO (Either String ())
+moveEntry :: Int -> T.Text -> IO (Either T.Text ())
 moveEntry entryID colName = do
   conn <- open db
   cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
@@ -44,11 +43,13 @@ moveEntry entryID colName = do
     [Only col] -> do
       result <-
         execute
-          conn "UPDATE Entry SET entryColumn = ? WHERE (entryID = ?)" (col, entryID)
+          conn
+          "UPDATE Entry SET entryColumn = ? WHERE (entryID = ?)"
+          (col, entryID)
       return $ Right result
-    _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
+    _ -> return $ Left $ T.unwords ["No column named", colName, "found"]
 
-addColumn :: T.Text -> IO (Either String ())
+addColumn :: T.Text -> IO (Either T.Text ())
 addColumn colName = do
   conn <- open db
   cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
@@ -56,4 +57,4 @@ addColumn colName = do
     [] -> do
       result <- execute conn "INSERT INTO Column (columnTitle) values (?)" (Only colName)
       return $ Right result
-    _ -> return $ Left $ "Column " ++ (T.unpack colName) ++ " already exists"
+    _ -> return $ Left $ T.unwords ["Column", colName, "already exists"]

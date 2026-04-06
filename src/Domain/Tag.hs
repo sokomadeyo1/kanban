@@ -9,7 +9,9 @@ data Tag = Tag
   }
   deriving (Show)
 
-newtype TagID = TagID Int deriving (Eq, Show)
+newtype TagID = TagID Int deriving (Eq)
+instance Show TagID where
+  show (TagID i) = show i
 instance Eq Tag where
   t1 == t2 = tagID t1 == tagID t2
 
