@@ -20,20 +20,20 @@ handle :: Handler -> IO ()
 handle GetEntries = do
   result <- getEntries
   case result of
-    Left e -> print e
+    Left e -> TIO.putStrLn e
     Right r -> TIO.putStr $ pretty r
 handle (NewEntry title desc) = do
   result <- newEntry title desc
   case result of
-    Left e -> print e
+    Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new entry:", title]
 handle (MoveEntry entryID colName) = do
   result <- moveEntry entryID colName
   case result of
-    Left e -> print e
+    Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Moved entry to the", colName, "column"]
 handle (NewColumn colName) = do
   result <- newColumn colName
   case result of
-    Left e -> print e
+    Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new column:", colName]
