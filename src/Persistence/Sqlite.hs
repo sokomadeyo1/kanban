@@ -33,7 +33,7 @@ addEntry title desc colName = do
 getEntries :: IO (Either String [Domain.Entry])
 getEntries = do
   conn <- open db
-  result <- query_ conn "SELECT entryID, entryTitle, entryDesc, entryColumn, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
+  result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
   return $ Right result
 
 moveEntry :: Int -> T.Text -> IO (Either String ())

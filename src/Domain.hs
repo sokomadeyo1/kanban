@@ -7,7 +7,6 @@ data Entry = Entry
   { entryID :: EntryID
   , entryTitle :: T.Text
   , entryDesc :: T.Text
-  , entryCol :: ColumnID
   , entryColName :: T.Text
   -- , entryTags :: [TagID]
   -- , entryAssignee :: [UserID]
@@ -72,7 +71,6 @@ instance FromRow Entry where
       <$> (fmap EntryID field)
       <*> field
       <*> field
-      <*> (fmap ColumnID field)
       <*> field
 
 instance FromRow Column where
