@@ -63,8 +63,7 @@ addColumn colName = do
   conn <- open db
   cols <- query conn
     "SELECT columnID FROM Column WHERE (columnTitle = ?)"
-    (Only colName) ::
-    IO [Only Int]
+    (Only colName) :: IO [Only Int]
   case cols of
     [] -> do
       result <- execute conn "INSERT INTO Column (columnTitle) values (?)" (Only colName)
