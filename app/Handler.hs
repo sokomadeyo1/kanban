@@ -15,6 +15,7 @@ import Usecase.GetColumns
 import Usecase.NewTag
 import Usecase.GetTags
 import Usecase.TagEntry
+import Usecase.DeleteTag
 
 data Handler
   = GetEntries
@@ -25,6 +26,7 @@ data Handler
   | NewTag T.Text
   | GetTags
   | TagEntry EntryID T.Text
+  | DeleteTag T.Text
 
 handle :: Handler -> IO ()
 handle GetEntries = do
@@ -67,3 +69,8 @@ handle (TagEntry entryid tagname) = do
   case result of
     Left e -> TIO.putStrLn e
     Right args -> TIO.putStrLn $ T.unwords ["Added", pretty $ Tag (TagID 0) tagname, "to entry", T.show entryid]
+handle (DeleteTag tagname) = do
+  result <- deleteTag tagname
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords ["Deleted tag:", tagname]

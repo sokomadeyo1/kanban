@@ -33,6 +33,7 @@ library
       Domain.Tag
       Domain.User
       Persistence.Sqlite
+      Usecase.DeleteTag
       Usecase.GetColumns
       Usecase.GetEntries
       Usecase.GetTaggedEntries

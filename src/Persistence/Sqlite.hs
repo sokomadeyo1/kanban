@@ -12,6 +12,7 @@ module Persistence.Sqlite (
   getOneTag,
   tagEntry,
   getEntriesTags,
+  deleteTag,
 ) where
 
 import qualified Data.Text as T
@@ -133,3 +134,12 @@ getEntriesTags entryid = do
     "SELECT Tag.tagID, tagName FROM Tag NATURAL JOIN EntriesTags WHERE entryID = ?"
     (Only entryid)
   return $ Right tags
+
+deleteTag :: TagID -> IO (Either T.Text ())
+deleteTag tagid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM Tag WHERE tagID = ?"
+    (Only tagid)
+  return $ Right result
