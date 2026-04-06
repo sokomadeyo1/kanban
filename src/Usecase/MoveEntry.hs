@@ -1,4 +1,4 @@
-module Usecase.MoveEntry (Persistence.moveEntry) where
+module Usecase.MoveEntry (moveEntry) where
 
 import qualified Data.Text as T
 import Domain.Entry
