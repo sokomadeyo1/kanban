@@ -26,6 +26,7 @@ cmdsAll =
   , NewTag
   , GetTags
   , TagEntry
+  , UntagEntry
   , DeleteTag
   , Help
   ]
@@ -39,6 +40,7 @@ data CmdString
   | NewTag
   | GetTags
   | TagEntry
+  | UntagEntry
   | DeleteTag
   | Help
   | Other T.Text
@@ -70,6 +72,10 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
   TagEntry ->
     if (length argv >= 2)
       then Right $ Handler.TagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      else Left $ argErrStr
+  UntagEntry ->
+    if (length argv >= 2)
+      then Right $ Handler.UntagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
       else Left $ argErrStr
   DeleteTag ->
     if (length argv >= 1)
@@ -120,6 +126,7 @@ helpCmd GetColumns = "GetColumns -- show a list of all columns"
 helpCmd NewTag     = "NewTag     -- create a new tag"
 helpCmd GetTags    = "GetTags    -- show a list of all tags"
 helpCmd TagEntry   = "TagEntry   -- add a tag to the entry"
+helpCmd UntagEntry = "UntagEntry -- remove a tag from the entry"
 helpCmd DeleteTag  = "DeleteTag  -- delete the specified tag"
 helpCmd Help       = "Help       -- show this message. Use help <cmd> for more details"
 helpCmd (Other _)  = ""
@@ -133,6 +140,7 @@ usage (Just GetColumns)  = "usage: GetColumns"
 usage (Just NewTag)      = "usage: NewTag <tag name>"
 usage (Just GetTags)     = "usage: GetTags"
 usage (Just TagEntry)    = "usage: TagEntry <entry id> <tag name>"
+usage (Just UntagEntry)  = "usage: UntagEntry <entry id> <tag name>"
 usage (Just DeleteTag)   = "usage: DeleteTag <tag name>"
 usage (Just Help)        = "usage: help [<cmd>]"
 usage Nothing            = help

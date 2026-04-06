@@ -11,6 +11,7 @@ module Persistence.Sqlite (
   getTags,
   getOneTag,
   tagEntry,
+  untagEntry,
   getEntriesTags,
   deleteTag,
 ) where
@@ -126,6 +127,15 @@ tagEntry entryid tagname = do
         (tag, entryid)
       return $ Right result
     _ -> return $ Left $ T.unwords ["No tag named", tagname, "found"]
+
+untagEntry :: EntryID -> TagID -> IO (Either T.Text ())
+untagEntry entryid tagid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM EntriesTags WHERE (tagID = ? AND entryID = ?)"
+    (tagid, entryid)
+  return $ Right result
 
 getEntriesTags :: EntryID -> IO (Either T.Text [Tag])
 getEntriesTags entryid = do

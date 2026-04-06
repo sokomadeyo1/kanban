@@ -43,6 +43,7 @@ library
       Usecase.NewEntry
       Usecase.NewTag
       Usecase.TagEntry
+      Usecase.UntagEntry
   other-modules:
       Paths_kanban
   autogen-modules:
