@@ -9,11 +9,12 @@ import Usecase.MoveEntry (moveEntry)
 import Usecase.NewColumn (newColumn)
 import Usecase.NewEntry (newEntry)
 import PrettyPrint
+import Domain.Entry
 
 data Handler
   = GetEntries
   | NewEntry T.Text T.Text
-  | MoveEntry Int T.Text
+  | MoveEntry EntryID T.Text
   | NewColumn T.Text
 
 handle :: Handler -> IO ()
