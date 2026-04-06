@@ -23,7 +23,6 @@ getTaggedEntries = do
   result <- getEntries
   case result of
     Left err -> return $ Left err
-    -- TODO: find out about 
     Right entries -> do
       eithertags <- mapM getEntriesTags entries
       let tags = map filterRight eithertags
