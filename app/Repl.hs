@@ -25,16 +25,10 @@ data CmdString
   | Other T.Text
   deriving (Read, Show)
 newtype Argv = Argv [T.Text]
-data UnparsedCall = UnparsedCall (Maybe CmdString) Argv
+data UnparsedCall = UnparsedCall CmdString Argv
 
 parse :: UnparsedCall -> Either T.Text Handler.Handler
-parse (UnparsedCall cmd argv) =
-  case cmd of
-    Just cmdstr -> checkArgv argv cmdstr
-    Nothing -> Left $ cmdNotFound
-
-checkArgv :: Argv -> CmdString -> Either T.Text Handler.Handler
-checkArgv (Argv argv) cmdstr = case cmdstr of
+parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
   GetBoard -> Right Handler.GetEntries
   AddEntry ->
     if (length argv >= 2)
@@ -69,14 +63,16 @@ run = do
         Right handler -> Handler.handle handler
 
 cmdSplit :: String -> UnparsedCall
-cmdSplit cmdline = case (readMaybe cmd :: Maybe CmdString) of
-  Nothing -> UnparsedCall (Just $ Other bad) (Argv [])
-  x -> UnparsedCall x $ Argv $ map T.pack argv
+cmdSplit cmdline =
+  case (readMaybe cmd :: Maybe CmdString) of
+    Nothing -> UnparsedCall (Other bad) (Argv [])
+    Just x -> case argv of
+      Left err -> UnparsedCall x $ Argv [T.pack err]
+      Right args -> UnparsedCall x (Argv $ map T.pack args)
  where
-  (cmd, argv1) = (takeWhile (/= ' ') cmdline, dropWhile (== ' ') $ dropWhile (/= ' ') cmdline)
-  argv = case ShellWords.parse argv1 of
-    Right arg -> arg
-    Left s -> [s]
+  cmd = takeWhile (/= ' ') cmdline
+  argv1 = dropWhile (== ' ') $ dropWhile (/= ' ') cmdline
+  argv = ShellWords.parse argv1
   bad = badCmd $ T.pack cmd
 
 help :: T.Text
