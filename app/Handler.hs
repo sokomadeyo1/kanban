@@ -4,13 +4,14 @@ module Handler (Handler (..), handle) where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import Usecase.GetEntries 
-import Usecase.MoveEntry 
-import Usecase.NewColumn 
-import Usecase.NewEntry 
-import Usecase.GetColumns
 import PrettyPrint
 import Domain.Entry
+import Usecase.GetEntries
+import Usecase.MoveEntry
+import Usecase.NewColumn
+import Usecase.NewEntry
+import Usecase.GetColumns
+import Usecase.NewTag
 
 data Handler
   = GetEntries
@@ -18,6 +19,7 @@ data Handler
   | MoveEntry EntryID T.Text
   | NewColumn T.Text
   | GetColumns
+  | NewTag T.Text
 
 handle :: Handler -> IO ()
 handle GetEntries = do
@@ -45,3 +47,8 @@ handle GetColumns = do
   case result of
     Left e -> TIO.putStrLn e
     Right r -> TIO.putStr $ pretty r
+handle (NewTag tagName) = do
+  result <- newTag tagName
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords ["Created a new tag:", tagName]

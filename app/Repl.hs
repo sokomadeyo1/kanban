@@ -16,6 +16,7 @@ argErrStr :: T.Text
 argErrStr = "Insufficient number of arguments"
 cmdNotFound :: T.Text
 cmdNotFound = "Command not found"
+cmdsAll :: [CmdString]
 
 data CmdString
   = GetBoard
@@ -23,13 +24,12 @@ data CmdString
   | MoveEntry
   | AddColumn
   | GetColumns
+  | NewTag
   | Help
   | Other T.Text
   deriving (Read, Show)
 newtype Argv = Argv [T.Text]
 data UnparsedCall = UnparsedCall CmdString Argv
-
-cmdAll = [GetBoard, AddEntry, MoveEntry, AddColumn, GetColumns, Help]
 
 parse :: UnparsedCall -> Either T.Text Handler.Handler
 parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
@@ -47,6 +47,10 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       then Right $ Handler.NewColumn (argv !! 0)
       else Left $ argErrStr
   GetColumns -> Right Handler.GetColumns
+  NewTag ->
+    if (length argv >= 1)
+      then Right $ Handler.NewTag (argv !! 0)
+      else Left $ argErrStr
   Help ->
     if (length argv >= 1)
       then Left $ usage $ readMaybe $ T.unpack (argv !! 0)
@@ -81,14 +85,15 @@ cmdSplit cmdline =
   bad = badCmd $ T.pack cmd
 
 help :: T.Text
-help = T.unlines $ map helpCmd cmdAll
+help = T.unlines $ map helpCmd cmdsAll
 
 helpCmd :: CmdString -> T.Text
 helpCmd GetBoard   = "GetBoard   -- show current board's contents"
 helpCmd AddEntry   = "AddEntry   -- create a new entry"
 helpCmd MoveEntry  = "MoveEntry  -- move an entry to another column"
 helpCmd AddColumn  = "AddColumn  -- create a new column"
-helpCmd GetColumns = "GetColumns -- show a list of new columns"
+helpCmd GetColumns = "GetColumns -- show a list of all columns"
+helpCmd NewTag     = "NewTag     -- create a new tag"
 helpCmd Help       = "Help       -- show this message. Use help <cmd> for more details"
 helpCmd (Other _)  = ""
 
@@ -98,9 +103,10 @@ usage (Just AddEntry)    = "usage: AddEntry <entry title> [<entry description>]"
 usage (Just MoveEntry)   = "usage: MoveEntry <entry id> <column name>"
 usage (Just AddColumn)   = "usage: AddColumn <column name>"
 usage (Just GetColumns)  = "usage: GetColumns"
+usage (Just NewTag)      = "usage: NewTag <tag name>"
 usage (Just Help)        = "usage: help [<cmd>]"
 usage Nothing            = help
-usage (Just (Other cmd)) = cmdNotFound
+usage (Just (Other cmd)) = help
 
 badCmd :: T.Text -> T.Text
 badCmd = T.concat . ([cmdNotFound, ": "] ++) . (: [])

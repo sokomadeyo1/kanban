@@ -7,6 +7,7 @@ module Persistence.Sqlite (
   getOneEntry,
   addColumn,
   getColumns,
+  newTag,
 ) where
 
 import qualified Data.Text as T
@@ -51,7 +52,9 @@ getOneEntry eid = do
 moveEntry :: EntryID -> T.Text -> IO (Either T.Text ())
 moveEntry entryID colName = do
   conn <- open db
-  cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
+  cols <- query conn
+    "SELECT columnID FROM Column WHERE (columnTitle = ?)"
+    (Only colName) :: IO [Only Int]
   case cols of
     [Only col] -> do
       result <- execute conn
@@ -68,7 +71,7 @@ addColumn colName = do
     (Only colName) :: IO [Only Int]
   case cols of
     [] -> do
-      result <- execute conn "INSERT INTO Column (columnTitle) values (?)" (Only colName)
+      result <- execute conn "INSERT INTO Column (columnTitle) VALUES (?)" (Only colName)
       return $ Right result
     _ -> return $ Left $ T.unwords ["Column", colName, "already exists"]
 
@@ -78,3 +81,11 @@ getColumns = do
   cols <- query_ conn
     "SELECT * FROM Column"
   return $ Right cols
+
+newTag :: T.Text -> IO (Either T.Text ())
+newTag tagName = do
+  conn <- open db
+  result <- execute conn
+    "INSERT INTO Tag (tagName) VALUES (?)"
+    (Only tagName)
+  return $ Right result

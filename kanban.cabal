@@ -38,6 +38,7 @@ library
       Usecase.MoveEntry
       Usecase.NewColumn
       Usecase.NewEntry
+      Usecase.NewTag
   other-modules:
       Paths_kanban
   autogen-modules:

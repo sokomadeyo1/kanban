@@ -3,8 +3,8 @@
 module Usecase.GetColumns (getColumns) where
 
 import qualified Data.Text as T
-import qualified Persistence.Sqlite as Persistence
 import Domain.Column
+import qualified Persistence.Sqlite as Persistence
 
 getColumns :: IO (Either T.Text [Column])
 getColumns = do
