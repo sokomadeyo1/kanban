@@ -1,4 +1,7 @@
-module Domain.Board (Board) where
+module Domain.Board (
+  Board (..),
+  BoardID (..),
+) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow

@@ -1,6 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Domain.Column (Column, defaultColumnNames) where
+module Domain.Column (
+  Column (..),
+  ColumnID (..),
+  defaultColumnNames,
+) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
