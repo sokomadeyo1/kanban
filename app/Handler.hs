@@ -7,7 +7,7 @@ import qualified Data.Text.IO as TIO
 import PrettyPrint
 import Domain.Entry
 import Domain.Tag
-import Usecase.GetEntries
+import Usecase.GetTaggedEntries
 import Usecase.MoveEntry
 import Usecase.NewColumn
 import Usecase.NewEntry
@@ -28,7 +28,7 @@ data Handler
 
 handle :: Handler -> IO ()
 handle GetEntries = do
-  result <- getEntries
+  result <- getTaggedEntries
   case result of
     Left e -> TIO.putStrLn e
     Right r -> TIO.putStr $ pretty r

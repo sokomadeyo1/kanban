@@ -10,6 +10,7 @@ module Persistence.Sqlite (
   newTag,
   getTags,
   tagEntry,
+  getEntriesTags,
 ) where
 
 import qualified Data.Text as T
@@ -38,7 +39,8 @@ addEntry title desc colName = do
 getEntries :: IO (Either T.Text [Entry])
 getEntries = do
   conn <- open db
-  result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
+  result <- query_ conn
+    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
   return $ Right result
 
 getOneEntry :: EntryID -> IO (Either T.Text Entry)
@@ -112,3 +114,11 @@ tagEntry entryid tagname = do
         (tag, entryid)
       return $ Right result
     _ -> return $ Left $ T.unwords ["No tag named", tagname, "found"]
+
+getEntriesTags :: EntryID -> IO (Either T.Text [Tag])
+getEntriesTags entryid = do
+  conn <- open db
+  tags <- query conn
+    "SELECT Tag.tagID, tagName FROM Tag JOIN EntriesTags WHERE entryID = ?"
+    (Only entryid)
+  return $ Right tags
