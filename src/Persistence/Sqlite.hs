@@ -6,11 +6,13 @@ module Persistence.Sqlite (
   getEntries,
   getOneEntry,
   addColumn,
+  getColumns,
 ) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple
 import Domain.Entry
+import Domain.Column
 
 -- TODO: Implement reading db file path in a more appropriate place
 db :: String
@@ -69,3 +71,10 @@ addColumn colName = do
       result <- execute conn "INSERT INTO Column (columnTitle) values (?)" (Only colName)
       return $ Right result
     _ -> return $ Left $ T.unwords ["Column", colName, "already exists"]
+
+getColumns :: IO (Either T.Text [Column])
+getColumns = do
+  conn <- open db
+  cols <- query_ conn
+    "SELECT * FROM Column"
+  return $ Right cols

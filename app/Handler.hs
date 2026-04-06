@@ -4,10 +4,11 @@ module Handler (Handler (..), handle) where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import Usecase.GetEntries (getEntries)
-import Usecase.MoveEntry (moveEntry)
-import Usecase.NewColumn (newColumn)
-import Usecase.NewEntry (newEntry)
+import Usecase.GetEntries 
+import Usecase.MoveEntry 
+import Usecase.NewColumn 
+import Usecase.NewEntry 
+import Usecase.GetColumns
 import PrettyPrint
 import Domain.Entry
 
@@ -16,6 +17,7 @@ data Handler
   | NewEntry T.Text T.Text
   | MoveEntry EntryID T.Text
   | NewColumn T.Text
+  | GetColumns
 
 handle :: Handler -> IO ()
 handle GetEntries = do
@@ -38,3 +40,8 @@ handle (NewColumn colName) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new column:", colName]
+handle GetColumns = do
+  result <- getColumns
+  case result of
+    Left e -> TIO.putStrLn e
+    Right r -> TIO.putStr $ pretty r
