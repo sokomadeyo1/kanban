@@ -9,6 +9,7 @@ module Persistence.Sqlite (
   getColumns,
   newTag,
   getTags,
+  getOneTag,
   tagEntry,
   getEntriesTags,
 ) where
@@ -100,6 +101,16 @@ getTags = do
   tags <- query_ conn
     "SELECT * FROM Tag"
   return $ Right tags
+
+getOneTag :: T.Text -> IO (Either T.Text Tag)
+getOneTag tagname = do
+  conn <- open db
+  tags <- query conn
+    "SELECT * FROM Tag WHERE tagName = ?"
+    (Only tagname)
+  case tags of
+    [tag] -> return $ Right tag
+    _ -> return $ Left "Tag not found"
 
 tagEntry :: EntryID -> T.Text -> IO (Either T.Text ())
 tagEntry entryid tagname = do
