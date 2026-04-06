@@ -10,4 +10,7 @@ defaultColumn = "Backlog" :: T.Text
 
 newEntry :: T.Text -> T.Text -> IO (Either T.Text ())
 newEntry title desc = do
-  Persistence.addEntry title desc defaultColumn
+  let t = T.strip title
+  if T.length t == 0
+    then return $ Left "Error: empty entry name"
+    else Persistence.addEntry title desc defaultColumn
