@@ -1,9 +1,13 @@
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
+
 module Domain.Entry (
   Entry (..),
   EntryID (..),
 ) where
 
 import qualified Data.Text as T
+import Database.SQLite.Simple.FromField
 import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.ToField
 import Text.Read (ReadPrec, readPrec)
@@ -18,7 +22,9 @@ data Entry = Entry
   }
   deriving (Show)
 
-newtype EntryID = EntryID Int deriving (Eq)
+newtype EntryID = EntryID Int
+  deriving (Eq)
+  deriving (FromField) via Int
 instance Show EntryID where
   show (EntryID i) = show i
 instance Read EntryID where

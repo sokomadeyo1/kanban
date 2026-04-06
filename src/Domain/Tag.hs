@@ -1,10 +1,15 @@
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
+
 module Domain.Tag (
   Tag (..),
   TagID (..),
 ) where
 
 import qualified Data.Text as T
+import Database.SQLite.Simple.FromField
 import Database.SQLite.Simple.FromRow
+import Database.SQLite.Simple.ToField
 
 data Tag = Tag
   { tagID :: TagID
@@ -12,7 +17,9 @@ data Tag = Tag
   }
   deriving (Show)
 
-newtype TagID = TagID Int deriving (Eq)
+newtype TagID = TagID Int
+  deriving (Eq)
+  deriving (FromField) via Int
 instance Show TagID where
   show (TagID i) = show i
 instance Eq Tag where
@@ -23,3 +30,6 @@ instance FromRow Tag where
     Tag
       <$> (fmap TagID field)
       <*> field
+
+instance ToField TagID where
+  toField (TagID i) = toField i

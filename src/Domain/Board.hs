@@ -1,3 +1,6 @@
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
+
 module Domain.Board (
   Board (..),
   BoardID (..),
@@ -5,6 +8,7 @@ module Domain.Board (
 
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
+import Database.SQLite.Simple.FromField
 
 data Board = Board
   { boardID :: BoardID
@@ -14,7 +18,9 @@ data Board = Board
   -- , boardUsers :: [UserID]
   }
 
-newtype BoardID = BoardID Int deriving (Eq)
+newtype BoardID = BoardID Int
+  deriving (Eq)
+  deriving (FromField) via Int
 instance Show BoardID where
   show (BoardID i) = show i
 instance Eq Board where

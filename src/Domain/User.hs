@@ -1,9 +1,13 @@
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
+
 module Domain.User (
   User (..),
   UserID (..),
 ) where
 
 import qualified Data.Text as T
+import Database.SQLite.Simple.FromField
 import Database.SQLite.Simple.FromRow
 
 data User = User
@@ -14,7 +18,9 @@ data User = User
   }
   deriving (Show)
 
-newtype UserID = UserID Int deriving (Eq)
+newtype UserID = UserID Int
+  deriving (Eq)
+  deriving (FromField) via Int
 instance Show UserID where
   show (UserID i) = show i
 instance Eq User where
