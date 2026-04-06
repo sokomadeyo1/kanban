@@ -11,7 +11,9 @@ data Board = Board
   -- , boardUsers :: [UserID]
   }
 
-newtype BoardID = BoardID Int deriving (Eq, Show)
+newtype BoardID = BoardID Int deriving (Eq)
+instance Show BoardID where
+  show (BoardID i) = show i
 instance Eq Board where
   b1 == b2 = boardID b1 == boardID b2
 

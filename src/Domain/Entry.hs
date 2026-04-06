@@ -1,4 +1,4 @@
-module Domain.Entry (Entry) where
+module Domain.Entry (Entry (..)) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
@@ -13,7 +13,9 @@ data Entry = Entry
   }
   deriving (Show)
 
-newtype EntryID = EntryID Int deriving (Eq, Show)
+newtype EntryID = EntryID Int deriving (Eq)
+instance Show EntryID where
+  show (EntryID i) = show i
 instance Eq Entry where
   e1 == e2 = entryID e1 == entryID e2
 

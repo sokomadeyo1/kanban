@@ -11,7 +11,9 @@ data User = User
   }
   deriving (Show)
 
-newtype UserID = UserID Int deriving (Eq, Show)
+newtype UserID = UserID Int deriving (Eq)
+instance Show UserID where
+  show (UserID i) = show i
 instance Eq User where
   u1 == u2 = userID u1 == userID u2
 
