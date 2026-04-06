@@ -26,6 +26,12 @@ source-repository head
 library
   exposed-modules:
       Domain
+      Domain.Board
+      Domain.Column
+      Domain.Constraint
+      Domain.Entry
+      Domain.Tag
+      Domain.User
       Persistence.Sqlite
       Usecase.GetEntries
       Usecase.MoveEntry

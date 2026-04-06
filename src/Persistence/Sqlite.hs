@@ -9,7 +9,7 @@ module Persistence.Sqlite (
 
 import qualified Data.Text as T
 import Database.SQLite.Simple
-import qualified Domain
+import Domain.Entry
 
 -- TODO: Implement reading db file path in a more appropriate place
 db :: String
@@ -30,7 +30,7 @@ addEntry title desc colName = do
       return $ Right result
     _ -> return $ Left $ "No column named " ++ (T.unpack colName) ++ " found"
 
-getEntries :: IO (Either String [Domain.Entry])
+getEntries :: IO (Either String [Entry])
 getEntries = do
   conn <- open db
   result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
