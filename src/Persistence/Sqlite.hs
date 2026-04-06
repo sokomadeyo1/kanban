@@ -35,7 +35,7 @@ getEntries = do
   result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID"
   return $ Right result
 
-moveEntry :: Int -> T.Text -> IO (Either T.Text ())
+moveEntry :: EntryID -> T.Text -> IO (Either T.Text ())
 moveEntry entryID colName = do
   conn <- open db
   cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]

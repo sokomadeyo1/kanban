@@ -8,6 +8,7 @@ import qualified Handler
 import qualified ShellWords
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
+import Domain.Entry
 
 prompt :: T.Text
 prompt = "==> "
@@ -36,7 +37,7 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       else Left $ argErrStr
   MoveEntry ->
     if (length argv >= 2)
-      then Right $ Handler.MoveEntry (read $ T.unpack (argv !! 0) :: Int) (argv !! 1)
+      then Right $ Handler.MoveEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
       else Left $ argErrStr
   AddColumn ->
     if (length argv >= 1)

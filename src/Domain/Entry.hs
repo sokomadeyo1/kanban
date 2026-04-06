@@ -1,7 +1,12 @@
-module Domain.Entry (Entry (..)) where
+module Domain.Entry (
+  Entry (..),
+  EntryID (..),
+) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
+import Database.SQLite.Simple.ToField
+import Text.Read (ReadPrec, readPrec)
 
 data Entry = Entry
   { entryID :: EntryID
@@ -16,6 +21,11 @@ data Entry = Entry
 newtype EntryID = EntryID Int deriving (Eq)
 instance Show EntryID where
   show (EntryID i) = show i
+instance Read EntryID where
+  readPrec =
+    let i = readPrec :: ReadPrec Int
+     in fmap EntryID i
+
 instance Eq Entry where
   e1 == e2 = entryID e1 == entryID e2
 
@@ -26,3 +36,6 @@ instance FromRow Entry where
       <*> field
       <*> field
       <*> field
+
+instance ToField EntryID where
+  toField (EntryID i) = toField i
