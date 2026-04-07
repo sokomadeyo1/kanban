@@ -59,17 +59,17 @@ handle (MoveEntry entryid colname) = do
   result <- moveEntry entryid colname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", T.show entryid, "to the", colname, "column"]
+    Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", pretty entryid, "to the", colname, "column"]
 handle (RenameEntry entryid newname) = do
   result <- renameEntry entryid newname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Renamed entry", T.show entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Renamed entry", pretty entryid]
 handle (EditEntry entryid newname) = do
   result <- editEntry entryid newname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Changed the description of entry", T.show entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Changed the description of entry", pretty entryid]
 handle (DeleteEntry entryid) = do
   result <- deleteEntry entryid
   case result of
@@ -119,12 +119,12 @@ handle (TagEntry entryid tagname) = do
   result <- tagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Added", pretty $ Tag (TagID 0) tagname, "to entry", T.show entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Added", pretty $ Tag (TagID 0) tagname, "to entry", pretty entryid]
 handle (UntagEntry entryid tagname) = do
   result <- untagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Removed", pretty $ Tag (TagID 0) tagname, "from entry", T.show entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Removed", pretty $ Tag (TagID 0) tagname, "from entry", pretty entryid]
 handle (DeleteTag tagname) = do
   result <- deleteTag tagname
   case result of

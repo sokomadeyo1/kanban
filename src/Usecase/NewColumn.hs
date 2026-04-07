@@ -10,4 +10,8 @@ newColumn colname = do
   let s = T.strip colname
   if T.length s == 0
     then return $ Left "Error: empty column name"
-    else Persistence.addColumn colname
+    else do
+      col <- Persistence.getOneColumn colname
+      case col of
+        Left _ -> Persistence.addColumn colname
+        Right _ -> return $ Left $ T.unwords ["Column", colname, "already exists"]

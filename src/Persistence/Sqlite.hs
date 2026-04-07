@@ -95,14 +95,8 @@ deleteEntry entryid = do
 addColumn :: T.Text -> IO (Either T.Text ())
 addColumn colName = do
   conn <- open db
-  cols <- query conn
-    "SELECT columnID FROM Column WHERE (columnTitle = ?)"
-    (Only colName) :: IO [Only Int]
-  case cols of
-    [] -> do
-      result <- execute conn "INSERT INTO Column (columnTitle) VALUES (?)" (Only colName)
-      return $ Right result
-    _ -> return $ Left $ T.unwords ["Column", colName, "already exists"]
+  result <- execute conn "INSERT INTO Column (columnTitle) VALUES (?)" (Only colName)
+  return $ Right result
 
 renameColumn :: ColumnID -> T.Text -> IO (Either T.Text ())
 renameColumn columnid newname = do
@@ -171,19 +165,13 @@ getOneTag tagname = do
     [tag] -> return $ Right tag
     _ -> return $ Left "Tag not found"
 
-tagEntry :: EntryID -> T.Text -> IO (Either T.Text ())
-tagEntry entryid tagname = do
+tagEntry :: EntryID -> TagID -> IO (Either T.Text ())
+tagEntry entryid tagid = do
   conn <- open db
-  tags <- query conn
-    "SELECT tagID FROM Tag WHERE tagName = ?"
-    (Only tagname) :: IO [Only TagID]
-  case tags of
-    [Only tag] -> do
-      result <- execute conn
-        "INSERT INTO EntriesTags (tagID, entryID) VALUES (?, ?)"
-        (tag, entryid)
-      return $ Right result
-    _ -> return $ Left $ T.unwords ["No tag named", tagname, "found"]
+  result <- execute conn
+    "INSERT INTO EntriesTags (tagID, entryID) VALUES (?, ?)"
+    (tagid, entryid)
+  return $ Right result
 
 untagEntry :: EntryID -> TagID -> IO (Either T.Text ())
 untagEntry entryid tagid = do
