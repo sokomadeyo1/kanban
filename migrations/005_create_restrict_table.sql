@@ -1,0 +1,11 @@
+BEGIN;
+
+CREATE TABLE Restrict (
+	fromColumn INTEGER NOT NULL,
+	toColumn INTEGER NOT NULL,
+	PRIMARY KEY (fromColumn, toColumn),
+	FOREIGN KEY (fromColumn) REFERENCES Column(columnID) ON DELETE CASCADE,
+	FOREIGN KEY (toColumn) REFERENCES Column(columnID) ON DELETE CASCADE
+);
+
+COMMIT;
