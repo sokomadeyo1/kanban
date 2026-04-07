@@ -20,6 +20,7 @@ import Usecase.NewColumn
 import Usecase.NewEntry
 import Usecase.NewTag
 import Usecase.RenameEntry
+import Usecase.RenameColumn
 import Usecase.ShowColumn
 import Usecase.TagEntry
 import Usecase.UntagEntry
@@ -32,6 +33,7 @@ data Handler
   | EditEntry EntryID T.Text
   | DeleteEntry EntryID
   | NewColumn T.Text
+  | RenameColumn T.Text T.Text
   | GetColumns
   | ShowColumn T.Text
   | DeleteColumn T.Text
@@ -78,6 +80,11 @@ handle (NewColumn colname) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new column:", colname]
+handle (RenameColumn oldname newname) = do
+  result <- renameColumn oldname newname
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords ["Renamed column", oldname, "to", newname]
 handle GetColumns = do
   result <- getColumns
   case result of

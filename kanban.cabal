@@ -45,6 +45,7 @@ library
       Usecase.NewColumn
       Usecase.NewEntry
       Usecase.NewTag
+      Usecase.RenameColumn
       Usecase.RenameEntry
       Usecase.ShowColumn
       Usecase.TagEntry

@@ -9,6 +9,7 @@ module Persistence.Sqlite (
   getEntries,
   getOneEntry,
   addColumn,
+  renameColumn,
   getColumns,
   getColumnEntries,
   getOneColumn,
@@ -102,6 +103,14 @@ addColumn colName = do
       result <- execute conn "INSERT INTO Column (columnTitle) VALUES (?)" (Only colName)
       return $ Right result
     _ -> return $ Left $ T.unwords ["Column", colName, "already exists"]
+
+renameColumn :: ColumnID -> T.Text -> IO (Either T.Text ())
+renameColumn columnid newname = do
+  conn <- open db
+  result <- execute conn
+    "UPDATE Column SET columnTitle = ? WHERE (columnID = ?)"
+    (newname, columnid)
+  return $ Right result
 
 getColumns :: IO (Either T.Text [Column])
 getColumns = do
