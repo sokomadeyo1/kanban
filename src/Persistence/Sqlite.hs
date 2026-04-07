@@ -7,14 +7,23 @@ module Persistence.Sqlite (
   getOneEntry,
   addColumn,
   getColumns,
+  newTag,
+  getTags,
+  getOneTag,
+  tagEntry,
+  untagEntry,
+  getEntriesTags,
+  getEntriesByTag,
+  deleteTag,
+  deleteTagInstances,
 ) where
 
 import qualified Data.Text as T
 import Database.SQLite.Simple
-import Domain.Entry
 import Domain.Column
+import Domain.Entry
+import Domain.Tag
 
--- TODO: Implement reading db file path in a more appropriate place
 db :: String
 db = "data/dev.db"
 
@@ -51,7 +60,9 @@ getOneEntry eid = do
 moveEntry :: EntryID -> T.Text -> IO (Either T.Text ())
 moveEntry entryID colName = do
   conn <- open db
-  cols <- query conn "SELECT columnID FROM Column WHERE (columnTitle = ?)" (Only colName) :: IO [Only Int]
+  cols <- query conn
+    "SELECT columnID FROM Column WHERE (columnTitle = ?)"
+    (Only colName) :: IO [Only ColumnID]
   case cols of
     [Only col] -> do
       result <- execute conn
@@ -68,7 +79,7 @@ addColumn colName = do
     (Only colName) :: IO [Only Int]
   case cols of
     [] -> do
-      result <- execute conn "INSERT INTO Column (columnTitle) values (?)" (Only colName)
+      result <- execute conn "INSERT INTO Column (columnTitle) VALUES (?)" (Only colName)
       return $ Right result
     _ -> return $ Left $ T.unwords ["Column", colName, "already exists"]
 
@@ -78,3 +89,85 @@ getColumns = do
   cols <- query_ conn
     "SELECT * FROM Column"
   return $ Right cols
+
+newTag :: T.Text -> IO (Either T.Text ())
+newTag tagName = do
+  conn <- open db
+  result <- execute conn
+    "INSERT INTO Tag (tagName) VALUES (?)"
+    (Only tagName)
+  return $ Right result
+
+getTags :: IO (Either T.Text [Tag])
+getTags = do
+  conn <- open db
+  tags <- query_ conn
+    "SELECT * FROM Tag"
+  return $ Right tags
+
+getOneTag :: T.Text -> IO (Either T.Text Tag)
+getOneTag tagname = do
+  conn <- open db
+  tags <- query conn
+    "SELECT * FROM Tag WHERE tagName = ?"
+    (Only tagname)
+  case tags of
+    [tag] -> return $ Right tag
+    _ -> return $ Left "Tag not found"
+
+tagEntry :: EntryID -> T.Text -> IO (Either T.Text ())
+tagEntry entryid tagname = do
+  conn <- open db
+  tags <- query conn
+    "SELECT tagID FROM Tag WHERE tagName = ?"
+    (Only tagname) :: IO [Only TagID]
+  case tags of
+    [Only tag] -> do
+      result <- execute conn
+        "INSERT INTO EntriesTags (tagID, entryID) VALUES (?, ?)"
+        (tag, entryid)
+      return $ Right result
+    _ -> return $ Left $ T.unwords ["No tag named", tagname, "found"]
+
+untagEntry :: EntryID -> TagID -> IO (Either T.Text ())
+untagEntry entryid tagid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM EntriesTags WHERE (tagID = ? AND entryID = ?)"
+    (tagid, entryid)
+  return $ Right result
+
+getEntriesTags :: EntryID -> IO (Either T.Text [Tag])
+getEntriesTags entryid = do
+  conn <- open db
+  tags <- query conn
+    "SELECT Tag.tagID, tagName FROM Tag NATURAL JOIN EntriesTags WHERE entryID = ?"
+    (Only entryid)
+  return $ Right tags
+
+getEntriesByTag :: TagID -> IO (Either T.Text [Entry])
+getEntriesByTag tagid = do
+  conn <- open db
+  entries <- query conn
+    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON columnID = entryColumn NATURAL JOIN EntriesTags WHERE EntriesTags.tagID = ?"
+    (Only tagid)
+  return $ Right entries
+
+deleteTag :: TagID -> IO (Either T.Text ())
+deleteTag tagid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM Tag WHERE tagID = ?"
+    (Only tagid)
+  return $ Right result
+
+deleteTagInstances :: TagID -> IO (Either T.Text ())
+deleteTagInstances tagid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM EntriesTags WHERE tagID = ?"
+    (Only tagid)
+  return $ Right result
