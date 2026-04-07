@@ -18,6 +18,7 @@ import Usecase.MoveEntry
 import Usecase.NewColumn
 import Usecase.NewEntry
 import Usecase.NewTag
+import Usecase.RenameEntry
 import Usecase.ShowColumn
 import Usecase.TagEntry
 import Usecase.UntagEntry
@@ -26,6 +27,7 @@ data Handler
   = GetEntries
   | NewEntry T.Text T.Text
   | MoveEntry EntryID T.Text
+  | RenameEntry EntryID T.Text
   | DeleteEntry EntryID
   | NewColumn T.Text
   | GetColumns
@@ -49,11 +51,16 @@ handle (NewEntry title desc) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new entry:", title]
-handle (MoveEntry entryid colName) = do
-  result <- moveEntry entryid colName
+handle (MoveEntry entryid colname) = do
+  result <- moveEntry entryid colname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", T.show entryid, "to the", colName, "column"]
+    Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", T.show entryid, "to the", colname, "column"]
+handle (RenameEntry entryid newname) = do
+  result <- renameEntry entryid newname
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords ["Renamed entry", T.show entryid]
 handle (DeleteEntry entryid) = do
   result <- deleteEntry entryid
   case result of

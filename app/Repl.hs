@@ -22,6 +22,7 @@ cmdsAll :: [CmdString]
 cmdsAll =
   [ GetBoard
   , AddEntry
+  , RenameEntry
   , MoveEntry
   , DelEntry
   , AddColumn
@@ -40,6 +41,7 @@ cmdsAll =
 data CmdString
   = GetBoard
   | AddEntry
+  | RenameEntry
   | MoveEntry
   | DelEntry
   | AddColumn
@@ -67,6 +69,12 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       else if (length argv >= 1)
         then Right $ Handler.NewEntry (argv !! 0) ""
         else Left $ argErrStr
+  RenameEntry ->
+    if (length argv >= 2)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.RenameEntry i (argv !! 1)
+      else Left $ argErrStr
   MoveEntry ->
     if (length argv >= 2)
       then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
@@ -154,26 +162,28 @@ help :: T.Text
 help = T.unlines $ map helpCmd cmdsAll
 
 helpCmd :: CmdString -> T.Text
-helpCmd GetBoard   = "GetBoard   -- show current board's contents"
-helpCmd AddEntry   = "AddEntry   -- create a new entry"
-helpCmd MoveEntry  = "MoveEntry  -- move an entry to another column"
-helpCmd DelEntry   = "DelEntry   -- delete an entry"
-helpCmd AddColumn  = "AddColumn  -- create a new column"
-helpCmd ShowColumn = "ShowColumn -- list entries from one column"
-helpCmd GetColumns = "GetColumns -- show a list of all columns"
-helpCmd DelColumn  = "DelColumn  -- delete a column"
-helpCmd NewTag     = "NewTag     -- create a new tag"
-helpCmd GetTags    = "GetTags    -- show a list of all tags"
-helpCmd ByTag      = "ByTag      -- get all entries with specified tag"
-helpCmd TagEntry   = "TagEntry   -- add a tag to the entry"
-helpCmd UntagEntry = "UntagEntry -- remove a tag from the entry"
-helpCmd DeleteTag  = "DeleteTag  -- delete the specified tag"
-helpCmd Help       = "Help       -- show this message. Use help <cmd> for more details"
-helpCmd (Other _)  = ""
+helpCmd GetBoard    = "GetBoard    -- show current board's contents"
+helpCmd AddEntry    = "AddEntry    -- create a new entry"
+helpCmd RenameEntry = "RenameEntry -- change the title of an entry"
+helpCmd MoveEntry   = "MoveEntry   -- move an entry to another column"
+helpCmd DelEntry    = "DelEntry    -- delete an entry"
+helpCmd AddColumn   = "AddColumn   -- create a new column"
+helpCmd ShowColumn  = "ShowColumn  -- list entries from one column"
+helpCmd GetColumns  = "GetColumns  -- show a list of all columns"
+helpCmd DelColumn   = "DelColumn   -- delete a column"
+helpCmd NewTag      = "NewTag      -- create a new tag"
+helpCmd GetTags     = "GetTags     -- show a list of all tags"
+helpCmd ByTag       = "ByTag       -- get all entries with specified tag"
+helpCmd TagEntry    = "TagEntry    -- add a tag to the entry"
+helpCmd UntagEntry  = "UntagEntry  -- remove a tag from the entry"
+helpCmd DeleteTag   = "DeleteTag   -- delete the specified tag"
+helpCmd Help        = "Help        -- show this message. Use help <cmd> for more details"
+helpCmd (Other _)   = ""
 
 usage :: Maybe CmdString -> T.Text
 usage (Just GetBoard)    = "usage: GetBoard"
 usage (Just AddEntry)    = "usage: AddEntry <entry title> [<entry description>]"
+usage (Just RenameEntry) = "usage: RenameEntry <entry id> <new entry title>"
 usage (Just MoveEntry)   = "usage: MoveEntry <entry id> <column name>"
 usage (Just DelEntry)    = "usage: DelEntry <entry id>"
 usage (Just AddColumn)   = "usage: AddColumn <column name>"
