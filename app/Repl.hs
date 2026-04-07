@@ -14,6 +14,8 @@ prompt :: T.Text
 prompt = "==> "
 argErrStr :: T.Text
 argErrStr = "Insufficient number of arguments"
+typeErrStr :: T.Text
+typeErrStr = "Incorrect arguments. Use help to see command usage"
 cmdNotFound :: T.Text
 cmdNotFound = "Command not found"
 cmdsAll :: [CmdString]
@@ -65,7 +67,15 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
         else Left $ argErrStr
   MoveEntry ->
     if (length argv >= 2)
-      then Right $ Handler.MoveEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.MoveEntry i (argv !! 1)
+      else Left $ argErrStr
+  DelEntry ->
+    if (length argv >= 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.DeleteEntry i
       else Left $ argErrStr
   DelEntry ->
     if (length argv >= 1)
@@ -91,11 +101,15 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       else Left $ argErrStr
   TagEntry ->
     if (length argv >= 2)
-      then Right $ Handler.TagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.TagEntry i (argv !! 1)
       else Left $ argErrStr
   UntagEntry ->
     if (length argv >= 2)
-      then Right $ Handler.UntagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.UntagEntry i (argv !! 1)
       else Left $ argErrStr
   DeleteTag ->
     if (length argv >= 1)
