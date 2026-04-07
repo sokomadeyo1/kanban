@@ -4,6 +4,7 @@ module Persistence.Sqlite (
   addEntry,
   moveEntry,
   renameEntry,
+  editEntry,
   deleteEntry,
   getEntries,
   getOneEntry,
@@ -70,6 +71,14 @@ renameEntry entryid newname = do
   conn <- open db
   result <- execute conn
     "UPDATE Entry SET entryTitle = ? WHERE (entryID = ?)"
+    (newname, entryid)
+  return $ Right result
+
+editEntry :: EntryID -> T.Text -> IO (Either T.Text ())
+editEntry entryid newname = do
+  conn <- open db
+  result <- execute conn
+    "UPDATE Entry SET entryDesc = ? WHERE (entryID = ?)"
     (newname, entryid)
   return $ Right result
 

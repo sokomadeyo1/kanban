@@ -10,6 +10,7 @@ import PrettyPrint
 import Usecase.DeleteColumn
 import Usecase.DeleteEntry
 import Usecase.DeleteTag
+import Usecase.EditEntry
 import Usecase.GetColumns
 import Usecase.GetEntriesByTag
 import Usecase.GetTaggedEntries
@@ -28,6 +29,7 @@ data Handler
   | NewEntry T.Text T.Text
   | MoveEntry EntryID T.Text
   | RenameEntry EntryID T.Text
+  | EditEntry EntryID T.Text
   | DeleteEntry EntryID
   | NewColumn T.Text
   | GetColumns
@@ -61,6 +63,11 @@ handle (RenameEntry entryid newname) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Renamed entry", T.show entryid]
+handle (EditEntry entryid newname) = do
+  result <- editEntry entryid newname
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords ["Changed the description of entry", T.show entryid]
 handle (DeleteEntry entryid) = do
   result <- deleteEntry entryid
   case result of
