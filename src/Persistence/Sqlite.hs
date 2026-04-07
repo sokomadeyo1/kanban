@@ -15,6 +15,7 @@ module Persistence.Sqlite (
   getEntriesTags,
   getEntriesByTag,
   deleteTag,
+  deleteTagInstances,
 ) where
 
 import qualified Data.Text as T
@@ -160,5 +161,14 @@ deleteTag tagid = do
   _ <- execute conn "PRAGMA foreign_keys = ON;" ()
   result <- execute conn
     "DELETE FROM Tag WHERE tagID = ?"
+    (Only tagid)
+  return $ Right result
+
+deleteTagInstances :: TagID -> IO (Either T.Text ())
+deleteTagInstances tagid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM EntriesTags WHERE tagID = ?"
     (Only tagid)
   return $ Right result
