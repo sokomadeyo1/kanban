@@ -30,19 +30,13 @@ import Domain.Tag
 db :: String
 db = "data/dev.db"
 
-addEntry :: T.Text -> T.Text -> T.Text -> IO (Either T.Text ())
-addEntry title desc colName = do
+addEntry :: T.Text -> T.Text -> ColumnID -> IO (Either T.Text ())
+addEntry title desc colid = do
   conn <- open db
-  cols <- query conn
-    "SELECT columnID FROM Column WHERE (columnTitle = ?)"
-    (Only colName) :: IO [Only Int]
-  case cols of
-    [Only i] -> do
-      result <- execute conn
-        "INSERT INTO Entry (entryTitle, entryDesc, entryColumn) values (?, ?, ?)"
-        (title, desc, i)
-      return $ Right result
-    _ -> return $ Left $ T.unwords ["No column named", colName, "found"]
+  result <- execute conn
+    "INSERT INTO Entry (entryTitle, entryDesc, entryColumn) values (?, ?, ?)"
+    (title, desc, colid)
+  return $ Right result
 
 getEntries :: IO (Either T.Text [Entry])
 getEntries = do
@@ -60,19 +54,13 @@ getOneEntry eid = do
     [e] -> return $ Right e
     _ -> return $ Left "Entry not found"
 
-moveEntry :: EntryID -> T.Text -> IO (Either T.Text ())
-moveEntry entryID colName = do
+moveEntry :: EntryID -> ColumnID -> IO (Either T.Text ())
+moveEntry entryid colid = do
   conn <- open db
-  cols <- query conn
-    "SELECT columnID FROM Column WHERE (columnTitle = ?)"
-    (Only colName) :: IO [Only ColumnID]
-  case cols of
-    [Only col] -> do
-      result <- execute conn
-        "UPDATE Entry SET entryColumn = ? WHERE (entryID = ?)"
-        (col, entryID)
-      return $ Right result
-    _ -> return $ Left $ T.unwords ["No column named", colName, "found"]
+  result <- execute conn
+    "UPDATE Entry SET entryColumn = ? WHERE (entryID = ?)"
+    (colid, entryid)
+  return $ Right result
 
 addColumn :: T.Text -> IO (Either T.Text ())
 addColumn colName = do

@@ -58,7 +58,9 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
   AddEntry ->
     if (length argv >= 2)
       then Right $ Handler.NewEntry (argv !! 0) (argv !! 1)
-      else Left $ argErrStr
+      else if (length argv >= 1)
+        then Right $ Handler.NewEntry (argv !! 0) ""
+        else Left $ argErrStr
   MoveEntry ->
     if (length argv >= 2)
       then Right $ Handler.MoveEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
