@@ -23,6 +23,7 @@ cmdsAll =
   [ GetBoard
   , AddEntry
   , RenameEntry
+  , EditEntry
   , MoveEntry
   , DelEntry
   , AddColumn
@@ -42,6 +43,7 @@ data CmdString
   = GetBoard
   | AddEntry
   | RenameEntry
+  | EditEntry
   | MoveEntry
   | DelEntry
   | AddColumn
@@ -74,6 +76,12 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
         Nothing -> Left $ typeErrStr
         Just i -> Right $ Handler.RenameEntry i (argv !! 1)
+      else Left $ argErrStr
+  EditEntry ->
+    if (length argv >= 2)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.EditEntry i (argv !! 1)
       else Left $ argErrStr
   MoveEntry ->
     if (length argv >= 2)
@@ -165,6 +173,7 @@ helpCmd :: CmdString -> T.Text
 helpCmd GetBoard    = "GetBoard    -- show current board's contents"
 helpCmd AddEntry    = "AddEntry    -- create a new entry"
 helpCmd RenameEntry = "RenameEntry -- change the title of an entry"
+helpCmd EditEntry   = "EditEntry   -- change the title of an entry"
 helpCmd MoveEntry   = "MoveEntry   -- move an entry to another column"
 helpCmd DelEntry    = "DelEntry    -- delete an entry"
 helpCmd AddColumn   = "AddColumn   -- create a new column"
@@ -184,6 +193,7 @@ usage :: Maybe CmdString -> T.Text
 usage (Just GetBoard)    = "usage: GetBoard"
 usage (Just AddEntry)    = "usage: AddEntry <entry title> [<entry description>]"
 usage (Just RenameEntry) = "usage: RenameEntry <entry id> <new entry title>"
+usage (Just EditEntry)   = "usage: EditEntry <entry id> <new entry title>"
 usage (Just MoveEntry)   = "usage: MoveEntry <entry id> <column name>"
 usage (Just DelEntry)    = "usage: DelEntry <entry id>"
 usage (Just AddColumn)   = "usage: AddColumn <column name>"
