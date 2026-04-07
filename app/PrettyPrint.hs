@@ -22,6 +22,9 @@ instance Pretty Column where
 instance Pretty Tag where
   pretty (Tag _ name) = T.concat ["\t<", name, ">"]
 
+instance Pretty EntryID where
+  pretty (EntryID i) = T.concat ["#", T.show i]
+
 instance (Pretty a) => Pretty [a] where
   pretty = T.unlines . map pretty
 

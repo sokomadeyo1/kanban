@@ -15,6 +15,7 @@ import Domain.Entry
 import Domain.Tag
 import Usecase.GetTaggedEntries
 import Usecase.MoveEntry
+import Usecase.DeleteEntry
 import Usecase.NewColumn
 import Usecase.NewEntry
 import Usecase.GetColumns
@@ -29,6 +30,7 @@ data Handler
   = GetEntries
   | NewEntry T.Text T.Text
   | MoveEntry EntryID T.Text
+  | DeleteEntry EntryID
   | NewColumn T.Text
   | GetColumns
   | DeleteColumn T.Text
@@ -55,6 +57,11 @@ handle (MoveEntry entryID colName) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", T.show entryID, "to the", colName, "column"]
+handle (DeleteEntry entryid) = do
+  result <- deleteEntry entryid
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords ["Deleted entry", pretty entryid]
 handle (NewColumn colName) = do
   result <- newColumn colName
   case result of

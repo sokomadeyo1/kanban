@@ -14,6 +14,8 @@ prompt :: T.Text
 prompt = "==> "
 argErrStr :: T.Text
 argErrStr = "Insufficient number of arguments"
+typeErrStr :: T.Text
+typeErrStr = "Incorrect arguments. Use help to see command usage"
 cmdNotFound :: T.Text
 cmdNotFound = "Command not found"
 cmdsAll :: [CmdString]
@@ -21,6 +23,7 @@ cmdsAll =
   [ GetBoard
   , AddEntry
   , MoveEntry
+  , DelEntry
   , AddColumn
   , GetColumns
   , DelColumn
@@ -37,6 +40,7 @@ data CmdString
   = GetBoard
   | AddEntry
   | MoveEntry
+  | DelEntry
   | AddColumn
   | GetColumns
   | NewTag
@@ -63,7 +67,19 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
         else Left $ argErrStr
   MoveEntry ->
     if (length argv >= 2)
-      then Right $ Handler.MoveEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.MoveEntry i (argv !! 1)
+      else Left $ argErrStr
+  DelEntry ->
+    if (length argv >= 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.DeleteEntry i
+      else Left $ argErrStr
+  DelEntry ->
+    if (length argv >= 1)
+      then Right $ Handler.DeleteEntry (read $ T.unpack (argv !! 0) :: EntryID)
       else Left $ argErrStr
   AddColumn ->
     if (length argv >= 1)
@@ -85,11 +101,15 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       else Left $ argErrStr
   TagEntry ->
     if (length argv >= 2)
-      then Right $ Handler.TagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.TagEntry i (argv !! 1)
       else Left $ argErrStr
   UntagEntry ->
     if (length argv >= 2)
-      then Right $ Handler.UntagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left $ typeErrStr
+        Just i -> Right $ Handler.UntagEntry i (argv !! 1)
       else Left $ argErrStr
   DeleteTag ->
     if (length argv >= 1)
@@ -135,6 +155,7 @@ helpCmd :: CmdString -> T.Text
 helpCmd GetBoard   = "GetBoard   -- show current board's contents"
 helpCmd AddEntry   = "AddEntry   -- create a new entry"
 helpCmd MoveEntry  = "MoveEntry  -- move an entry to another column"
+helpCmd DelEntry   = "DelEntry   -- delete an entry"
 helpCmd AddColumn  = "AddColumn  -- create a new column"
 helpCmd GetColumns = "GetColumns -- show a list of all columns"
 helpCmd DelColumn  = "DelColumn  -- delete a column"
@@ -151,6 +172,7 @@ usage :: Maybe CmdString -> T.Text
 usage (Just GetBoard)    = "usage: GetBoard"
 usage (Just AddEntry)    = "usage: AddEntry <entry title> [<entry description>]"
 usage (Just MoveEntry)   = "usage: MoveEntry <entry id> <column name>"
+usage (Just DelEntry)    = "usage: DelEntry <entry id>"
 usage (Just AddColumn)   = "usage: AddColumn <column name>"
 usage (Just GetColumns)  = "usage: GetColumns"
 usage (Just DelColumn)   = "usage: DelColumn <column name>"
