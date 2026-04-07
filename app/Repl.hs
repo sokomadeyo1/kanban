@@ -32,6 +32,7 @@ cmdsAll =
   , GetColumns
   , DelColumn
   , NewTag
+  , RenameTag
   , GetTags
   , ByTag
   , TagEntry
@@ -52,6 +53,7 @@ data CmdString
   | ShowColumn
   | GetColumns
   | NewTag
+  | RenameTag
   | GetTags
   | ByTag
   | TagEntry
@@ -117,6 +119,10 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
   NewTag ->
     if (length argv >= 1)
       then Right $ Handler.NewTag (argv !! 0)
+      else Left $ argErrStr
+  RenameTag ->
+    if (length argv >= 2)
+      then Right $ Handler.RenameTag (argv !! 0) (argv !! 1)
       else Left $ argErrStr
   GetTags -> Right Handler.GetTags
   ByTag ->
@@ -188,6 +194,7 @@ helpCmd ShowColumn   = "ShowColumn   -- list entries from one column"
 helpCmd GetColumns   = "GetColumns   -- show a list of all columns"
 helpCmd DelColumn    = "DelColumn    -- delete a column"
 helpCmd NewTag       = "NewTag       -- create a new tag"
+helpCmd RenameTag    = "RenameTag    -- change the name of a tag"
 helpCmd GetTags      = "GetTags      -- show a list of all tags"
 helpCmd ByTag        = "ByTag        -- get all entries with specified tag"
 helpCmd TagEntry     = "TagEntry     -- add a tag to the entry"
@@ -209,6 +216,7 @@ usage (Just ShowColumn)   = "usage: ShowColumn <column name>"
 usage (Just GetColumns)   = "usage: GetColumns"
 usage (Just DelColumn)    = "usage: DelColumn <column name>"
 usage (Just NewTag)       = "usage: NewTag <tag name>"
+usage (Just RenameTag)    = "usage: RenameTag <old tag name> <new tag name>"
 usage (Just GetTags)      = "usage: GetTags"
 usage (Just ByTag)        = "usage: ByTag <tag name>"
 usage (Just TagEntry)     = "usage: TagEntry <entry id> <tag name>"

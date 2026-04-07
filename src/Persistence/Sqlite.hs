@@ -15,6 +15,7 @@ module Persistence.Sqlite (
   getOneColumn,
   deleteColumn,
   newTag,
+  renameTag,
   getTags,
   getOneTag,
   tagEntry,
@@ -146,6 +147,14 @@ newTag tagname = do
   result <- execute conn
     "INSERT INTO Tag (tagName) VALUES (?)"
     (Only tagname)
+  return $ Right result
+
+renameTag :: TagID -> T.Text -> IO (Either T.Text ())
+renameTag tagid newname = do
+  conn <- open db
+  result <- execute conn
+    "UPDATE Tag SET tagName = ? WHERE (tagID = ?)"
+    (newname, tagid)
   return $ Right result
 
 getTags :: IO (Either T.Text [Tag])

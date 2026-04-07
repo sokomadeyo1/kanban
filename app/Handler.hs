@@ -19,8 +19,9 @@ import Usecase.MoveEntry
 import Usecase.NewColumn
 import Usecase.NewEntry
 import Usecase.NewTag
-import Usecase.RenameEntry
 import Usecase.RenameColumn
+import Usecase.RenameEntry
+import Usecase.RenameTag
 import Usecase.ShowColumn
 import Usecase.TagEntry
 import Usecase.UntagEntry
@@ -38,6 +39,7 @@ data Handler
   | ShowColumn T.Text
   | DeleteColumn T.Text
   | NewTag T.Text
+  | RenameTag T.Text T.Text
   | GetTags
   | EntriesByTag T.Text
   | TagEntry EntryID T.Text
@@ -105,6 +107,16 @@ handle (NewTag tagname) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new tag:", tagname]
+handle (RenameTag oldname newname) = do
+  result <- renameTag oldname newname
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords
+      [ "Renamed tag"
+      , pretty $ Tag (TagID 0) $ oldname
+      , "to"
+      , pretty $ Tag (TagID 0) $ newname
+      ]
 handle GetTags = do
   result <- getTags
   case result of
