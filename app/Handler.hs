@@ -14,6 +14,7 @@ import Usecase.NewEntry
 import Usecase.GetColumns
 import Usecase.NewTag
 import Usecase.GetTags
+import Usecase.GetEntriesByTag
 import Usecase.TagEntry
 import Usecase.UntagEntry
 import Usecase.DeleteTag
@@ -26,6 +27,7 @@ data Handler
   | GetColumns
   | NewTag T.Text
   | GetTags
+  | EntriesByTag T.Text
   | TagEntry EntryID T.Text
   | UntagEntry EntryID T.Text
   | DeleteTag T.Text
@@ -66,6 +68,11 @@ handle GetTags = do
   case result of
     Left e -> TIO.putStrLn e
     Right tags -> TIO.putStr $ pretty tags
+handle (EntriesByTag tagname) = do
+  result <- getEntriesByTag tagname
+  case result of
+    Left e -> TIO.putStrLn e
+    Right entries -> TIO.putStr $ T.unlines [T.unwords ["Entries with", pretty $ Tag (TagID 0) tagname, ":"], pretty entries]
 handle (TagEntry entryid tagname) = do
   result <- tagEntry entryid tagname
   case result of

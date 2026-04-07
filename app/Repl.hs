@@ -25,6 +25,7 @@ cmdsAll =
   , GetColumns
   , NewTag
   , GetTags
+  , ByTag
   , TagEntry
   , UntagEntry
   , DeleteTag
@@ -39,6 +40,7 @@ data CmdString
   | GetColumns
   | NewTag
   | GetTags
+  | ByTag
   | TagEntry
   | UntagEntry
   | DeleteTag
@@ -69,6 +71,10 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       then Right $ Handler.NewTag (argv !! 0)
       else Left $ argErrStr
   GetTags -> Right Handler.GetTags
+  ByTag ->
+    if (length argv >= 1)
+      then Right $ Handler.EntriesByTag (argv !! 0)
+      else Left $ argErrStr
   TagEntry ->
     if (length argv >= 2)
       then Right $ Handler.TagEntry (read $ T.unpack (argv !! 0) :: EntryID) (argv !! 1)
@@ -125,6 +131,7 @@ helpCmd AddColumn  = "AddColumn  -- create a new column"
 helpCmd GetColumns = "GetColumns -- show a list of all columns"
 helpCmd NewTag     = "NewTag     -- create a new tag"
 helpCmd GetTags    = "GetTags    -- show a list of all tags"
+helpCmd ByTag      = "ByTag      -- get all entries with specified tag"
 helpCmd TagEntry   = "TagEntry   -- add a tag to the entry"
 helpCmd UntagEntry = "UntagEntry -- remove a tag from the entry"
 helpCmd DeleteTag  = "DeleteTag  -- delete the specified tag"
@@ -139,6 +146,7 @@ usage (Just AddColumn)   = "usage: AddColumn <column name>"
 usage (Just GetColumns)  = "usage: GetColumns"
 usage (Just NewTag)      = "usage: NewTag <tag name>"
 usage (Just GetTags)     = "usage: GetTags"
+usage (Just ByTag)       = "usage: ByTag <tag name>"
 usage (Just TagEntry)    = "usage: TagEntry <entry id> <tag name>"
 usage (Just UntagEntry)  = "usage: UntagEntry <entry id> <tag name>"
 usage (Just DeleteTag)   = "usage: DeleteTag <tag name>"

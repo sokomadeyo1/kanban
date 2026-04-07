@@ -13,6 +13,7 @@ module Persistence.Sqlite (
   tagEntry,
   untagEntry,
   getEntriesTags,
+  getEntriesByTag,
   deleteTag,
 ) where
 
@@ -144,6 +145,14 @@ getEntriesTags entryid = do
     "SELECT Tag.tagID, tagName FROM Tag NATURAL JOIN EntriesTags WHERE entryID = ?"
     (Only entryid)
   return $ Right tags
+
+getEntriesByTag :: TagID -> IO (Either T.Text [Entry])
+getEntriesByTag tagid = do
+  conn <- open db
+  entries <- query conn
+    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON columnID = entryColumn NATURAL JOIN EntriesTags WHERE EntriesTags.tagID = ?"
+    (Only tagid)
+  return $ Right entries
 
 deleteTag :: TagID -> IO (Either T.Text ())
 deleteTag tagid = do
