@@ -3,6 +3,7 @@
 module Persistence.Sqlite (
   addEntry,
   moveEntry,
+  deleteEntry,
   getEntries,
   getOneEntry,
   addColumn,
@@ -60,6 +61,15 @@ moveEntry entryid colid = do
   result <- execute conn
     "UPDATE Entry SET entryColumn = ? WHERE (entryID = ?)"
     (colid, entryid)
+  return $ Right result
+
+deleteEntry :: EntryID -> IO (Either T.Text ())
+deleteEntry entryid = do
+  conn <- open db
+  execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM Entry WHERE entryID = ?"
+    (Only entryid)
   return $ Right result
 
 addColumn :: T.Text -> IO (Either T.Text ())

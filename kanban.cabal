@@ -34,6 +34,7 @@ library
       Domain.User
       Persistence.Sqlite
       Usecase.DeleteColumn
+      Usecase.DeleteEntry
       Usecase.DeleteTag
       Usecase.GetColumns
       Usecase.GetEntries
