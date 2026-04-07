@@ -6,8 +6,8 @@ import qualified Persistence.Sqlite as Persistence
 import qualified Data.Text as T
 
 newTag :: T.Text -> IO (Either T.Text ())
-newTag tagName = do
-  let t = T.strip tagName
+newTag tagname = do
+  let t = T.strip tagname
   if (T.length t == 0)
     then return $ Left "Error: empty tag name"
-    else Persistence.newTag tagName
+    else Persistence.newTag tagname

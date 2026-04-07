@@ -119,11 +119,11 @@ deleteColumn columnid = do
   return $ Right result
 
 newTag :: T.Text -> IO (Either T.Text ())
-newTag tagName = do
+newTag tagname = do
   conn <- open db
   result <- execute conn
     "INSERT INTO Tag (tagName) VALUES (?)"
-    (Only tagName)
+    (Only tagname)
   return $ Right result
 
 getTags :: IO (Either T.Text [Tag])

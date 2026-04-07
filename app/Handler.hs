@@ -4,7 +4,6 @@ module Handler (Handler (..), handle) where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import Usecase.GetEntries 
 import Usecase.MoveEntry 
 import Usecase.NewColumn 
 import Usecase.NewEntry 
@@ -14,11 +13,7 @@ import PrettyPrint
 import Domain.Entry
 import Domain.Tag
 import Usecase.GetTaggedEntries
-import Usecase.MoveEntry
 import Usecase.DeleteEntry
-import Usecase.NewColumn
-import Usecase.NewEntry
-import Usecase.GetColumns
 import Usecase.NewTag
 import Usecase.GetTags
 import Usecase.GetEntriesByTag
@@ -52,21 +47,21 @@ handle (NewEntry title desc) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Created a new entry:", title]
-handle (MoveEntry entryID colName) = do
-  result <- moveEntry entryID colName
+handle (MoveEntry entryid colName) = do
+  result <- moveEntry entryid colName
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", T.show entryID, "to the", colName, "column"]
+    Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", T.show entryid, "to the", colName, "column"]
 handle (DeleteEntry entryid) = do
   result <- deleteEntry entryid
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Deleted entry", pretty entryid]
-handle (NewColumn colName) = do
-  result <- newColumn colName
+handle (NewColumn colname) = do
+  result <- newColumn colname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Created a new column:", colName]
+    Right _ -> TIO.putStrLn $ T.unwords ["Created a new column:", colname]
 handle GetColumns = do
   result <- getColumns
   case result of
@@ -77,11 +72,11 @@ handle (DeleteColumn colname) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Deleted column", colname]
-handle (NewTag tagName) = do
-  result <- newTag tagName
+handle (NewTag tagname) = do
+  result <- newTag tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Created a new tag:", tagName]
+    Right _ -> TIO.putStrLn $ T.unwords ["Created a new tag:", tagname]
 handle GetTags = do
   result <- getTags
   case result of
@@ -96,12 +91,12 @@ handle (TagEntry entryid tagname) = do
   result <- tagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right args -> TIO.putStrLn $ T.unwords ["Added", pretty $ Tag (TagID 0) tagname, "to entry", T.show entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Added", pretty $ Tag (TagID 0) tagname, "to entry", T.show entryid]
 handle (UntagEntry entryid tagname) = do
   result <- untagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right args -> TIO.putStrLn $ T.unwords ["Removed", pretty $ Tag (TagID 0) tagname, "from entry", T.show entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Removed", pretty $ Tag (TagID 0) tagname, "from entry", T.show entryid]
 handle (DeleteTag tagname) = do
   result <- deleteTag tagname
   case result of

@@ -6,12 +6,12 @@ import Domain.Column
 import qualified Persistence.Sqlite as Persistence
 
 moveEntry :: EntryID -> T.Text -> IO (Either T.Text ())
-moveEntry entryid colName = do
+moveEntry entryid colname = do
   entry <- Persistence.getOneEntry entryid
   case entry of
     Left err -> return $ Left err
     Right _ -> do
-      col <- Persistence.getOneColumn colName
+      col <- Persistence.getOneColumn colname
       case col of
         Left err -> return $ Left err
         Right (Column colid _) -> Persistence.moveEntry entryid colid

@@ -12,6 +12,6 @@ deleteTag tagname = do
   case result of
     Left err -> return $ Left err
     Right (Tag tagid _) -> do
-      Persistence.deleteTagInstances tagid
-      Persistence.deleteTag tagid
+      _ <- Persistence.deleteTagInstances tagid
+      _ <- Persistence.deleteTag tagid
       return $ Right ()
