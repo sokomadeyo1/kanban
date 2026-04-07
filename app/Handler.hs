@@ -4,6 +4,12 @@ module Handler (Handler (..), handle) where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import Usecase.GetEntries 
+import Usecase.MoveEntry 
+import Usecase.NewColumn 
+import Usecase.NewEntry 
+import Usecase.GetColumns
+import Usecase.DeleteColumn
 import PrettyPrint
 import Domain.Entry
 import Domain.Tag
@@ -25,6 +31,7 @@ data Handler
   | MoveEntry EntryID T.Text
   | NewColumn T.Text
   | GetColumns
+  | DeleteColumn T.Text
   | NewTag T.Text
   | GetTags
   | EntriesByTag T.Text
@@ -58,6 +65,11 @@ handle GetColumns = do
   case result of
     Left e -> TIO.putStrLn e
     Right r -> TIO.putStr $ pretty r
+handle (DeleteColumn colname) = do
+  result <- deleteColumn colname
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords ["Deleted column", colname]
 handle (NewTag tagName) = do
   result <- newTag tagName
   case result of

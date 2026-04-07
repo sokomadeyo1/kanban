@@ -7,6 +7,9 @@ module Persistence.Sqlite (
   getOneEntry,
   addColumn,
   getColumns,
+  getColumnEntries,
+  getOneColumn,
+  deleteColumn,
   newTag,
   getTags,
   getOneTag,
@@ -89,6 +92,33 @@ getColumns = do
   cols <- query_ conn
     "SELECT * FROM Column"
   return $ Right cols
+
+getColumnEntries :: ColumnID -> IO (Either T.Text [Entry])
+getColumnEntries columnid = do
+  conn <- open db
+  cols <- query conn
+    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn = columnID WHERE columnID = ?"
+    (Only columnid)
+  return $ Right cols
+
+getOneColumn :: T.Text -> IO (Either T.Text Column)
+getOneColumn colName = do
+  conn <- open db
+  cols <- query conn
+    "SELECT * FROM Column WHERE columnTitle = ?"
+    (Only colName)
+  case cols of
+    [c] -> return $ Right c
+    _ -> return $ Left $ T.unwords ["No column named", colName, "found"]
+
+deleteColumn :: ColumnID -> IO (Either T.Text ())
+deleteColumn columnid = do
+  conn <- open db
+  execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM Column WHERE columnID = ?"
+    (Only columnid)
+  return $ Right result
 
 newTag :: T.Text -> IO (Either T.Text ())
 newTag tagName = do
