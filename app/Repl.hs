@@ -23,6 +23,7 @@ cmdsAll =
   , MoveEntry
   , AddColumn
   , GetColumns
+  , DelColumn
   , NewTag
   , GetTags
   , ByTag
@@ -44,6 +45,7 @@ data CmdString
   | TagEntry
   | UntagEntry
   | DeleteTag
+  | DelColumn
   | Help
   | Other T.Text
   deriving (Read, Show)
@@ -66,6 +68,10 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
       then Right $ Handler.NewColumn (argv !! 0)
       else Left $ argErrStr
   GetColumns -> Right Handler.GetColumns
+  DelColumn ->
+    if (length argv >= 1)
+      then Right $ Handler.DeleteColumn (argv !! 0)
+      else Left $ argErrStr
   NewTag ->
     if (length argv >= 1)
       then Right $ Handler.NewTag (argv !! 0)
@@ -129,6 +135,7 @@ helpCmd AddEntry   = "AddEntry   -- create a new entry"
 helpCmd MoveEntry  = "MoveEntry  -- move an entry to another column"
 helpCmd AddColumn  = "AddColumn  -- create a new column"
 helpCmd GetColumns = "GetColumns -- show a list of all columns"
+helpCmd DelColumn  = "DelColumn  -- delete a column"
 helpCmd NewTag     = "NewTag     -- create a new tag"
 helpCmd GetTags    = "GetTags    -- show a list of all tags"
 helpCmd ByTag      = "ByTag      -- get all entries with specified tag"
@@ -144,6 +151,7 @@ usage (Just AddEntry)    = "usage: AddEntry <entry title> [<entry description>]"
 usage (Just MoveEntry)   = "usage: MoveEntry <entry id> <column name>"
 usage (Just AddColumn)   = "usage: AddColumn <column name>"
 usage (Just GetColumns)  = "usage: GetColumns"
+usage (Just DelColumn)   = "usage: DelColumn <column name>"
 usage (Just NewTag)      = "usage: NewTag <tag name>"
 usage (Just GetTags)     = "usage: GetTags"
 usage (Just ByTag)       = "usage: ByTag <tag name>"
