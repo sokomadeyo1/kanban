@@ -20,7 +20,7 @@ newEntry title desc = do
       case checkcol of
         Right (Column colid _) -> Persistence.addEntry title desc colid
         Left _ -> do
-          newColumn defaultColumn
+          _ <- newColumn defaultColumn
           newcol <- Persistence.getOneColumn defaultColumn
           case newcol of
             Left err -> return $ Left err

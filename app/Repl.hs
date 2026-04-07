@@ -77,10 +77,6 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
         Nothing -> Left $ typeErrStr
         Just i -> Right $ Handler.DeleteEntry i
       else Left $ argErrStr
-  DelEntry ->
-    if (length argv >= 1)
-      then Right $ Handler.DeleteEntry (read $ T.unpack (argv !! 0) :: EntryID)
-      else Left $ argErrStr
   AddColumn ->
     if (length argv >= 1)
       then Right $ Handler.NewColumn (argv !! 0)
@@ -184,7 +180,7 @@ usage (Just UntagEntry)  = "usage: UntagEntry <entry id> <tag name>"
 usage (Just DeleteTag)   = "usage: DeleteTag <tag name>"
 usage (Just Help)        = "usage: help [<cmd>]"
 usage Nothing            = help
-usage (Just (Other cmd)) = help
+usage (Just (Other _))   = help
 
 badCmd :: T.Text -> T.Text
 badCmd = T.concat . ([cmdNotFound, ": "] ++) . (: [])
