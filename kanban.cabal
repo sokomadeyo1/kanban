@@ -32,6 +32,8 @@ library
       Domain.Tag
       Domain.User
       Persistence.Sqlite
+      PrettyPrint
+      Usecase.AllowMove
       Usecase.DeleteColumn
       Usecase.DeleteEntry
       Usecase.DeleteTag
@@ -48,6 +50,7 @@ library
       Usecase.RenameColumn
       Usecase.RenameEntry
       Usecase.RenameTag
+      Usecase.RestrictMove
       Usecase.ShowColumn
       Usecase.TagEntry
       Usecase.UntagEntry
@@ -70,7 +73,6 @@ executable kanban-exe
   main-is: Main.hs
   other-modules:
       Handler
-      PrettyPrint
       Repl
       Paths_kanban
   autogen-modules:

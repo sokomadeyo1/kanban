@@ -14,6 +14,9 @@ module Persistence.Sqlite (
   getColumnEntries,
   getOneColumn,
   deleteColumn,
+  checkRestrict,
+  restrictMove,
+  allowMove,
   newTag,
   renameTag,
   getTags,
@@ -31,6 +34,7 @@ import qualified Data.Text as T
 import Database.SQLite.Simple
 import Domain.Column
 import Domain.Entry
+import Domain.Constraint
 import Domain.Tag
 
 db :: String
@@ -139,6 +143,32 @@ deleteColumn columnid = do
   result <- execute conn
     "DELETE FROM Column WHERE columnID = ?"
     (Only columnid)
+  return $ Right result
+
+checkRestrict :: ColumnID -> ColumnID -> IO (Either T.Text Bool)
+checkRestrict fromcol tocol = do
+  conn <- open db
+  result <- query conn
+    "SELECT * FROM Restrict WHERE (fromColumn = ? AND toColumn = ?)"
+    (fromcol, tocol) :: IO [Constraint]
+  case result of
+    [] -> return $ Right False
+    _ -> return $ Right True
+
+restrictMove :: ColumnID -> ColumnID -> IO (Either T.Text ())
+restrictMove fromcol tocol = do
+  conn <- open db
+  result <- execute conn
+    "INSERT INTO Restrict (fromColumn, toColumn) values (?, ?)"
+    (fromcol, tocol)
+  return $ Right result
+
+allowMove :: ColumnID -> ColumnID -> IO (Either T.Text ())
+allowMove fromcol tocol = do
+  conn <- open db
+  result <- execute conn
+    "DELETE FROM Restrict WHERE (fromColumn = ? AND toColumn = ?)"
+    (fromcol, tocol)
   return $ Right result
 
 newTag :: T.Text -> IO (Either T.Text ())
