@@ -54,6 +54,7 @@ library
       Usecase.ShowColumn
       Usecase.TagEntry
       Usecase.UntagEntry
+      Util.Util
   other-modules:
       Paths_kanban
   autogen-modules:

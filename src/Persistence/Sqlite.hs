@@ -25,6 +25,7 @@ module Persistence.Sqlite (
   untagEntry,
   getEntriesTags,
   getEntriesByTag,
+  getTaggedEntries,
   getEntriesByColumn,
   deleteTag,
   deleteTagInstances,
@@ -51,15 +52,31 @@ addEntry title desc colid = do
 getEntries :: IO (Either T.Text [Entry])
 getEntries = do
   conn <- open db
-  result <- query_ conn "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID ORDER BY columnID"
+  result <- query_ conn
+    (read $ unwords
+      [ "\""
+      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
+      , "FROM Entry"
+      , "JOIN Column ON entryColumn=columnID"
+      , "ORDER BY columnID"
+      , "\""
+      ]
+    )
   return $ Right result
 
 getOneEntry :: EntryID -> IO (Either T.Text Entry)
 getOneEntry eid = do
   conn <- open db
   result <- query conn
-    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn=columnID WHERE (entryID = ?)"
-    (Only eid)
+    (read $ unwords
+      [ "\""
+      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
+      , "FROM Entry"
+      , "JOIN Column ON entryColumn=columnID"
+      , "WHERE (entryID = ?)"
+      , "\""
+      ]
+    ) (Only eid)
   case result of
     [e] -> return $ Right e
     _ -> return $ Left "Entry not found"
@@ -100,7 +117,9 @@ deleteEntry entryid = do
 addColumn :: T.Text -> IO (Either T.Text ())
 addColumn colName = do
   conn <- open db
-  result <- execute conn "INSERT INTO Column (columnTitle) VALUES (?)" (Only colName)
+  result <- execute conn
+    "INSERT INTO Column (columnTitle) VALUES (?)"
+    (Only colName)
   return $ Right result
 
 renameColumn :: ColumnID -> T.Text -> IO (Either T.Text ())
@@ -122,8 +141,15 @@ getColumnEntries :: ColumnID -> IO (Either T.Text [Entry])
 getColumnEntries columnid = do
   conn <- open db
   cols <- query conn
-    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON entryColumn = columnID WHERE columnID = ?"
-    (Only columnid)
+    (read $ unwords
+      [ "\""
+      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
+      , "FROM Entry"
+      , "JOIN Column ON entryColumn = columnID"
+      , "WHERE columnID = ?"
+      , "\""
+      ]
+    ) (Only columnid)
   return $ Right cols
 
 getOneColumn :: T.Text -> IO (Either T.Text Column)
@@ -233,16 +259,51 @@ getEntriesByTag :: TagID -> IO (Either T.Text [Entry])
 getEntriesByTag tagid = do
   conn <- open db
   entries <- query conn
-    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON columnID = entryColumn NATURAL JOIN EntriesTags WHERE EntriesTags.tagID = ?"
-    (Only tagid)
+    (read $ unwords
+      [ "\""
+      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
+      , "FROM Entry JOIN Column ON columnID = entryColumn"
+      , "NATURAL JOIN EntriesTags"
+      , "WHERE EntriesTags.tagID = ?"
+      , "\""
+      ]
+    ) (Only tagid)
   return $ Right entries
+
+getTaggedEntries :: IO (Either T.Text [(Entry, [Tag])])
+getTaggedEntries = do
+  conn <- open db
+  entries <- query_ conn
+    (read $ unwords
+      [ "\""
+      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle, json_group_array(Tag.tagID), json_group_array(tagName)"
+      , "FROM Entry"
+      , "JOIN Column ON columnID = entryColumn"
+      , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
+      , "JOIN Tag ON EntriesTags.tagID = Tag.tagID"
+      , "GROUP BY Entry.entryID"
+      , "ORDER BY columnID, Tag.tagID"
+      , "\""
+      ]
+    ) :: IO [(EntryID, T.Text, T.Text, T.Text, String, String)]
+  -- Haskell doesn't allow to break this into several lines
+  let parseTaggedEntries (eid, title, desc, col, tagids, tagnames) = ((Entry eid title desc col), zipWith Tag tagids_ tagnames_) where tagids_ = read tagids; tagnames_ = read tagnames
+  let parsed = map parseTaggedEntries entries
+  return $ Right parsed
 
 getEntriesByColumn :: ColumnID -> IO (Either T.Text [Entry])
 getEntriesByColumn colid = do
   conn <- open db
   entries <- query conn
-    "SELECT entryID, entryTitle, entryDesc, columnTitle FROM Entry JOIN Column ON columnID = entryColumn WHERE columnID = ?"
-    (Only colid)
+    (read $ unwords
+      [ "\""
+      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
+      , "FROM Entry"
+      , "JOIN Column ON columnID = entryColumn"
+      , "WHERE columnID = ?"
+      , "\""
+      ]
+    ) (Only colid)
   return $ Right entries
 
 deleteTag :: TagID -> IO (Either T.Text ())
