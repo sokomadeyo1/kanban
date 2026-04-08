@@ -34,9 +34,10 @@ module Persistence.Sqlite (
 import qualified Data.Text as T
 import Database.SQLite.Simple
 import Domain.Column
-import Domain.Entry
 import Domain.Constraint
+import Domain.Entry
 import Domain.Tag
+import Util.Cast
 
 db :: String
 db = "data/dev.db"
@@ -286,25 +287,26 @@ getTaggedEntries = do
       , "\""
       ]
     ) :: IO [(EntryID, T.Text, T.Text, T.Text, String, String)]
-  -- Haskell doesn't allow to break this into several lines
-  let parseTaggedEntries (eid, title, desc, col, tagids, tagnames) = ((Entry eid title desc col), zipWith Tag tagids_ tagnames_) where tagids_ = read tagids; tagnames_ = read tagnames
-  let parsed = map parseTaggedEntries entries
-  return $ Right parsed
+  return $ Right $ map castTaggedEntry entries
 
-getEntriesByColumn :: ColumnID -> IO (Either T.Text [Entry])
+getEntriesByColumn :: ColumnID -> IO (Either T.Text [(Entry, [Tag])])
 getEntriesByColumn colid = do
   conn <- open db
   entries <- query conn
     (read $ unwords
       [ "\""
-      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
+      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle, json_group_array(Tag.tagID), json_group_array(tagName)"
       , "FROM Entry"
       , "JOIN Column ON columnID = entryColumn"
+      , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
+      , "JOIN Tag ON EntriesTags.tagID = Tag.tagID"
       , "WHERE columnID = ?"
+      , "GROUP BY Entry.entryID"
+      , "ORDER BY Tag.tagID"
       , "\""
       ]
-    ) (Only colid)
-  return $ Right entries
+    ) (Only colid) :: IO [(EntryID, T.Text, T.Text, T.Text, String, String)]
+  return $ Right $ map castTaggedEntry entries
 
 deleteTag :: TagID -> IO (Either T.Text ())
 deleteTag tagid = do
