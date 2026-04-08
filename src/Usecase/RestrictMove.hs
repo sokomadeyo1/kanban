@@ -5,7 +5,7 @@ module Usecase.RestrictMove (restrictMove) where
 import qualified Data.Text as T
 import Domain.Column
 import qualified Persistence.Sqlite as Persistence
-import PrettyPrint
+import Util.PrettyPrint
 import Util.Class
 
 restrictMove :: T.Text -> T.Text -> IO (Either T.Text ())

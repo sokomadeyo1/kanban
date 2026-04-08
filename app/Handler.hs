@@ -7,7 +7,6 @@ import qualified Data.Text.IO as TIO
 import Domain.Entry
 import Domain.Column
 import Domain.Tag
-import PrettyPrint
 import Usecase.AllowMove
 import Usecase.DeleteColumn
 import Usecase.DeleteEntry
@@ -29,6 +28,7 @@ import Usecase.ShowColumn
 import Usecase.TagEntry
 import Usecase.UntagEntry
 import Util.Class
+import Util.PrettyPrint
 
 data Handler
   = GetEntries

@@ -5,8 +5,8 @@ module Usecase.AllowMove (allowMove) where
 import qualified Data.Text as T
 import Domain.Column
 import qualified Persistence.Sqlite as Persistence
-import PrettyPrint
 import Util.Class
+import Util.PrettyPrint
 
 allowMove :: T.Text -> T.Text -> IO (Either T.Text ())
 allowMove fromcolname tocolname = do

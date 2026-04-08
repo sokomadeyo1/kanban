@@ -6,8 +6,8 @@ import qualified Data.Text as T
 import Domain.Column
 import Domain.Entry
 import qualified Persistence.Sqlite as Persistence
-import PrettyPrint
 import Util.Class
+import Util.PrettyPrint
 
 moveEntry :: EntryID -> T.Text -> IO (Either T.Text ())
 moveEntry entryid tocolname = do
