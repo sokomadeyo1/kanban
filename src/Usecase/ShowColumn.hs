@@ -17,5 +17,5 @@ showColumn colname = do
     Right (Column colid _) -> do
       result <- Persistence.getEntriesByColumn colid
       case result of
-        Right [] -> return $ Left $ T.concat [pretty $ Column colid colname, "is empty"]
+        Right [] -> return $ Left $ T.unwords [pretty $ Column colid colname, "is empty"]
         _ -> return result
