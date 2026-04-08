@@ -41,7 +41,6 @@ library
       Usecase.GetColumns
       Usecase.GetEntries
       Usecase.GetEntriesByTag
-      Usecase.GetTaggedEntries
       Usecase.GetTags
       Usecase.MoveEntry
       Usecase.NewColumn
@@ -54,6 +53,7 @@ library
       Usecase.ShowColumn
       Usecase.TagEntry
       Usecase.UntagEntry
+      Util.Cast
   other-modules:
       Paths_kanban
   autogen-modules:

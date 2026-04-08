@@ -15,7 +15,7 @@ import Usecase.DeleteTag
 import Usecase.EditEntry
 import Usecase.GetColumns
 import Usecase.GetEntriesByTag
-import Usecase.GetTaggedEntries
+import Usecase.GetEntries
 import Usecase.GetTags
 import Usecase.MoveEntry
 import Usecase.NewColumn
@@ -53,7 +53,7 @@ data Handler
 
 handle :: Handler -> IO ()
 handle GetEntries = do
-  result <- getTaggedEntries
+  result <- getEntries
   case result of
     Left e -> TIO.putStrLn e
     Right r -> TIO.putStr $ pretty r

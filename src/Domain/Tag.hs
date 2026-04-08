@@ -10,6 +10,7 @@ import qualified Data.Text as T
 import Database.SQLite.Simple.FromField
 import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.ToField
+import Text.Read
 
 data Tag = Tag
   { tagID :: TagID
@@ -22,6 +23,10 @@ newtype TagID = TagID Int
   deriving (FromField) via Int
 instance Show TagID where
   show (TagID i) = show i
+instance Read TagID where
+  readPrec =
+    let i = readPrec :: ReadPrec Int
+     in fmap TagID i
 instance Eq Tag where
   t1 == t2 = tagID t1 == tagID t2
 
