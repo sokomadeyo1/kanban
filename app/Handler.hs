@@ -5,6 +5,7 @@ module Handler (Handler (..), handle) where
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Domain.Entry
+import Domain.Column
 import Domain.Tag
 import PrettyPrint
 import Usecase.DeleteColumn
@@ -22,6 +23,7 @@ import Usecase.NewTag
 import Usecase.RenameColumn
 import Usecase.RenameEntry
 import Usecase.RenameTag
+import Usecase.RestrictMove
 import Usecase.ShowColumn
 import Usecase.TagEntry
 import Usecase.UntagEntry
@@ -38,6 +40,7 @@ data Handler
   | GetColumns
   | ShowColumn T.Text
   | DeleteColumn T.Text
+  | RestrictMove T.Text T.Text
   | NewTag T.Text
   | RenameTag T.Text T.Text
   | GetTags
@@ -102,6 +105,16 @@ handle (DeleteColumn colname) = do
   case result of
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords ["Deleted column", colname]
+handle (RestrictMove fromcol tocol) = do
+  result <- restrictMove fromcol tocol
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords
+      [ "Restricted moving from"
+      , pretty $ Column (ColumnID 0) fromcol
+      , "to"
+      , pretty $ Column (ColumnID 0) tocol
+      ]
 handle (NewTag tagname) = do
   result <- newTag tagname
   case result of

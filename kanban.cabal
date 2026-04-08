@@ -49,6 +49,7 @@ library
       Usecase.RenameColumn
       Usecase.RenameEntry
       Usecase.RenameTag
+      Usecase.RestrictMove
       Usecase.ShowColumn
       Usecase.TagEntry
       Usecase.UntagEntry

@@ -15,6 +15,7 @@ module Persistence.Sqlite (
   getOneColumn,
   deleteColumn,
   checkRestrict,
+  restrictMove,
   newTag,
   renameTag,
   getTags,
@@ -152,6 +153,14 @@ checkRestrict fromcol tocol = do
   case result of
     [] -> return $ Right False
     _ -> return $ Right True
+
+restrictMove :: ColumnID -> ColumnID -> IO (Either T.Text ())
+restrictMove fromcol tocol = do
+  conn <- open db
+  result <- execute conn
+    "INSERT INTO Restrict (fromColumn, toColumn) values (?, ?)"
+    (fromcol, tocol)
+  return $ Right result
 
 newTag :: T.Text -> IO (Either T.Text ())
 newTag tagname = do
