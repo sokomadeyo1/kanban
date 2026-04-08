@@ -32,6 +32,7 @@ cmdsAll =
   , GetColumns
   , DelColumn
   , Restrict
+  , Allow
   , NewTag
   , RenameTag
   , GetTags
@@ -55,6 +56,7 @@ data CmdString
   | GetColumns
   | DelColumn
   | Restrict
+  | Allow
   | NewTag
   | RenameTag
   | GetTags
@@ -121,6 +123,10 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
   Restrict ->
     if (length argv >= 2)
       then Right $ Handler.RestrictMove (argv !! 0) (argv !! 1)
+      else Left $ argErrStr
+  Allow ->
+    if (length argv >= 2)
+      then Right $ Handler.AllowMove (argv !! 0) (argv !! 1)
       else Left $ argErrStr
   NewTag ->
     if (length argv >= 1)
@@ -200,6 +206,7 @@ helpCmd ShowColumn   = "ShowColumn   -- list entries from one column"
 helpCmd GetColumns   = "GetColumns   -- show a list of all columns"
 helpCmd DelColumn    = "DelColumn    -- delete a column"
 helpCmd Restrict     = "Restrict     -- restrict moving from one column to another"
+helpCmd Allow        = "Allow        -- allow moving from one column to another"
 helpCmd NewTag       = "NewTag       -- create a new tag"
 helpCmd RenameTag    = "RenameTag    -- change the name of a tag"
 helpCmd GetTags      = "GetTags      -- show a list of all tags"
@@ -223,6 +230,7 @@ usage (Just ShowColumn)   = "usage: ShowColumn <column name>"
 usage (Just GetColumns)   = "usage: GetColumns"
 usage (Just DelColumn)    = "usage: DelColumn <column name>"
 usage (Just Restrict)     = "usage: Restrict <column name> <column name>"
+usage (Just Allow)        = "usage: Allow <column name> <column name>"
 usage (Just NewTag)       = "usage: NewTag <tag name>"
 usage (Just RenameTag)    = "usage: RenameTag <old tag name> <new tag name>"
 usage (Just GetTags)      = "usage: GetTags"

@@ -16,6 +16,7 @@ module Persistence.Sqlite (
   deleteColumn,
   checkRestrict,
   restrictMove,
+  allowMove,
   newTag,
   renameTag,
   getTags,
@@ -159,6 +160,14 @@ restrictMove fromcol tocol = do
   conn <- open db
   result <- execute conn
     "INSERT INTO Restrict (fromColumn, toColumn) values (?, ?)"
+    (fromcol, tocol)
+  return $ Right result
+
+allowMove :: ColumnID -> ColumnID -> IO (Either T.Text ())
+allowMove fromcol tocol = do
+  conn <- open db
+  result <- execute conn
+    "DELETE FROM Restrict WHERE (fromColumn = ? AND toColumn = ?)"
     (fromcol, tocol)
   return $ Right result
 

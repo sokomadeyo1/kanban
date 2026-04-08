@@ -33,6 +33,7 @@ library
       Domain.User
       Persistence.Sqlite
       PrettyPrint
+      Usecase.AllowMove
       Usecase.DeleteColumn
       Usecase.DeleteEntry
       Usecase.DeleteTag

@@ -8,6 +8,7 @@ import Domain.Entry
 import Domain.Column
 import Domain.Tag
 import PrettyPrint
+import Usecase.AllowMove
 import Usecase.DeleteColumn
 import Usecase.DeleteEntry
 import Usecase.DeleteTag
@@ -41,6 +42,7 @@ data Handler
   | ShowColumn T.Text
   | DeleteColumn T.Text
   | RestrictMove T.Text T.Text
+  | AllowMove T.Text T.Text
   | NewTag T.Text
   | RenameTag T.Text T.Text
   | GetTags
@@ -111,6 +113,16 @@ handle (RestrictMove fromcol tocol) = do
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords
       [ "Restricted moving from"
+      , pretty $ Column (ColumnID 0) fromcol
+      , "to"
+      , pretty $ Column (ColumnID 0) tocol
+      ]
+handle (AllowMove fromcol tocol) = do
+  result <- allowMove fromcol tocol
+  case result of
+    Left e -> TIO.putStrLn e
+    Right _ -> TIO.putStrLn $ T.unwords
+      [ "Allowed moving from"
       , pretty $ Column (ColumnID 0) fromcol
       , "to"
       , pretty $ Column (ColumnID 0) tocol
