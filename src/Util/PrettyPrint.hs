@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module PrettyPrint (Pretty, pretty) where
+module Util.PrettyPrint (Pretty, pretty) where
 
 import qualified Data.Text as T
 import Domain.Column

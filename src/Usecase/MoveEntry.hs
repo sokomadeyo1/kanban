@@ -6,7 +6,8 @@ import qualified Data.Text as T
 import Domain.Column
 import Domain.Entry
 import qualified Persistence.Sqlite as Persistence
-import PrettyPrint
+import Util.Class
+import Util.PrettyPrint
 
 moveEntry :: EntryID -> T.Text -> IO (Either T.Text ())
 moveEntry entryid tocolname = do
@@ -28,8 +29,8 @@ moveEntry entryid tocolname = do
                 Right False -> Persistence.moveEntry entryid tocolid
                 Right True -> return $ Left $ T.unwords
                   [ "Moving from"
-                  , pretty $ Column (ColumnID 0) fromcolname
+                  , pretty $ (dummy fromcolname :: Column)
                   , "to"
-                  , pretty $ Column (ColumnID 0) tocolname
+                  , pretty $ (dummy tocolname :: Column)
                   , "is restricted"
                   ]

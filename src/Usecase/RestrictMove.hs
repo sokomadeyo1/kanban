@@ -5,7 +5,8 @@ module Usecase.RestrictMove (restrictMove) where
 import qualified Data.Text as T
 import Domain.Column
 import qualified Persistence.Sqlite as Persistence
-import PrettyPrint
+import Util.PrettyPrint
+import Util.Class
 
 restrictMove :: T.Text -> T.Text -> IO (Either T.Text ())
 restrictMove fromcolname tocolname = do
@@ -22,9 +23,9 @@ restrictMove fromcolname tocolname = do
             Left err -> return $ Left err
             Right True -> return $ Left $ T.unwords
               [ "Moving from"
-              , pretty $ Column (ColumnID 0) fromcolname
+              , pretty $ (dummy fromcolname :: Column)
               , "to"
-              , pretty $ Column (ColumnID 0) tocolname
+              , pretty $ (dummy tocolname :: Column)
               , "is already restricted"
               ]
             Right False -> Persistence.restrictMove fromcolid tocolid

@@ -7,7 +7,6 @@ import qualified Data.Text.IO as TIO
 import Domain.Entry
 import Domain.Column
 import Domain.Tag
-import PrettyPrint
 import Usecase.AllowMove
 import Usecase.DeleteColumn
 import Usecase.DeleteEntry
@@ -28,6 +27,8 @@ import Usecase.RestrictMove
 import Usecase.ShowColumn
 import Usecase.TagEntry
 import Usecase.UntagEntry
+import Util.Class
+import Util.PrettyPrint
 
 data Handler
   = GetEntries
@@ -113,9 +114,9 @@ handle (RestrictMove fromcol tocol) = do
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords
       [ "Restricted moving from"
-      , pretty $ Column (ColumnID 0) fromcol
+      , pretty $ (dummy fromcol :: Column)
       , "to"
-      , pretty $ Column (ColumnID 0) tocol
+      , pretty $ (dummy tocol :: Column)
       ]
 handle (AllowMove fromcol tocol) = do
   result <- allowMove fromcol tocol
@@ -123,9 +124,9 @@ handle (AllowMove fromcol tocol) = do
     Left e -> TIO.putStrLn e
     Right _ -> TIO.putStrLn $ T.unwords
       [ "Allowed moving from"
-      , pretty $ Column (ColumnID 0) fromcol
+      , pretty $ (dummy fromcol :: Column)
       , "to"
-      , pretty $ Column (ColumnID 0) tocol
+      , pretty $ (dummy tocol :: Column)
       ]
 handle (NewTag tagname) = do
   result <- newTag tagname
@@ -151,17 +152,17 @@ handle (EntriesByTag tagname) = do
   result <- getEntriesByTag tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right entries -> TIO.putStr $ T.unlines [T.unwords ["Entries with", pretty $ Tag (TagID 0) tagname, ":"], pretty entries]
+    Right entries -> TIO.putStr $ T.unlines [T.unwords ["Entries with", pretty $ (dummy tagname :: Tag), ":"], pretty entries]
 handle (TagEntry entryid tagname) = do
   result <- tagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Added", pretty $ Tag (TagID 0) tagname, "to entry", pretty entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Added", pretty $ (dummy tagname :: Tag), "to entry", pretty entryid]
 handle (UntagEntry entryid tagname) = do
   result <- untagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Removed", pretty $ Tag (TagID 0) tagname, "from entry", pretty entryid]
+    Right _ -> TIO.putStrLn $ T.unwords ["Removed", pretty $ (dummy tagname :: Tag), "from entry", pretty entryid]
 handle (DeleteTag tagname) = do
   result <- deleteTag tagname
   case result of

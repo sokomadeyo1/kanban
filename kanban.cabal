@@ -32,7 +32,6 @@ library
       Domain.Tag
       Domain.User
       Persistence.Sqlite
-      PrettyPrint
       Usecase.AllowMove
       Usecase.DeleteColumn
       Usecase.DeleteEntry
@@ -54,6 +53,8 @@ library
       Usecase.TagEntry
       Usecase.UntagEntry
       Util.Cast
+      Util.Class
+      Util.PrettyPrint
   other-modules:
       Paths_kanban
   autogen-modules:

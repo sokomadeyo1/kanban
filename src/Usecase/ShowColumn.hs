@@ -7,7 +7,7 @@ import Domain.Column
 import Domain.Entry
 import Domain.Tag
 import qualified Persistence.Sqlite as Persistence
-import PrettyPrint
+import Util.PrettyPrint
 
 showColumn :: T.Text -> IO (Either T.Text [(Entry, [Tag])])
 showColumn colname = do

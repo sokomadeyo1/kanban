@@ -11,6 +11,7 @@ import Database.SQLite.Simple.FromField
 import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.ToField
 import Text.Read
+import Util.Class
 
 data Tag = Tag
   { tagID :: TagID
@@ -27,9 +28,11 @@ instance Read TagID where
   readPrec =
     let i = readPrec :: ReadPrec Int
      in fmap TagID i
+
 instance Eq Tag where
   t1 == t2 = tagID t1 == tagID t2
-
+instance Dummy Tag where
+  dummy s = Tag (TagID 0) s
 instance FromRow Tag where
   fromRow =
     Tag

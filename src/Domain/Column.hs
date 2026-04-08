@@ -12,6 +12,7 @@ import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.FromField
 import Database.SQLite.Simple.ToField
+import Util.Class
 
 defaultColumnNames :: [T.Text]
 defaultColumnNames = ["Backlog", "Ready", "In progress", "Review", "Done"]
@@ -30,6 +31,8 @@ instance Show ColumnID where
   show (ColumnID i) = show i
 instance Eq Column where
   c1 == c2 = columnID c1 == columnID c2
+instance Dummy Column where
+  dummy s = Column (ColumnID 0) s
 
 instance FromRow Column where
   fromRow =
