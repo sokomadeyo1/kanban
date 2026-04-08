@@ -8,5 +8,9 @@ castTaggedEntry :: (EntryID, T.Text, T.Text, T.Text, String, String) -> (Entry, 
 castTaggedEntry (eid, title, desc, col, tagids_, tagnames_) =
   ((Entry eid title desc col), zipWith Tag tagids tagnames)
  where
-  tagids = read tagids_
-  tagnames = read tagnames_
+  tagids = case tagids_ of
+    "[null]" -> []
+    _ -> read tagids_
+  tagnames = case tagnames_ of
+    "[null]" -> []
+    _ -> read tagnames_

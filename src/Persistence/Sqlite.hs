@@ -281,12 +281,13 @@ getTaggedEntries = do
       , "FROM Entry"
       , "JOIN Column ON columnID = entryColumn"
       , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
-      , "JOIN Tag ON EntriesTags.tagID = Tag.tagID"
+      , "LEFT JOIN Tag ON EntriesTags.tagID = Tag.tagID"
       , "GROUP BY Entry.entryID"
       , "ORDER BY columnID, Tag.tagID"
       , "\""
       ]
     ) :: IO [(EntryID, T.Text, T.Text, T.Text, String, String)]
+  print entries
   return $ Right $ map castTaggedEntry entries
 
 getEntriesByColumn :: ColumnID -> IO (Either T.Text [(Entry, [Tag])])
@@ -299,7 +300,7 @@ getEntriesByColumn colid = do
       , "FROM Entry"
       , "JOIN Column ON columnID = entryColumn"
       , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
-      , "JOIN Tag ON EntriesTags.tagID = Tag.tagID"
+      , "LEFT JOIN Tag ON EntriesTags.tagID = Tag.tagID"
       , "WHERE columnID = ?"
       , "GROUP BY Entry.entryID"
       , "ORDER BY Tag.tagID"
