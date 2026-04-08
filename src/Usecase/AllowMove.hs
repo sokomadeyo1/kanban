@@ -6,6 +6,7 @@ import qualified Data.Text as T
 import Domain.Column
 import qualified Persistence.Sqlite as Persistence
 import PrettyPrint
+import Util.Class
 
 allowMove :: T.Text -> T.Text -> IO (Either T.Text ())
 allowMove fromcolname tocolname = do
@@ -22,9 +23,9 @@ allowMove fromcolname tocolname = do
             Left err -> return $ Left err
             Right False -> return $ Left $ T.unwords
               [ "Moving from"
-              , pretty $ Column (ColumnID 0) fromcolname
+              , pretty $ (dummy fromcolname :: Column)
               , "to"
-              , pretty $ Column (ColumnID 0) tocolname
+              , pretty $ (dummy tocolname :: Column)
               , "is not restricted"
               ]
             Right True -> Persistence.allowMove fromcolid tocolid

@@ -54,6 +54,7 @@ library
       Usecase.TagEntry
       Usecase.UntagEntry
       Util.Cast
+      Util.Class
   other-modules:
       Paths_kanban
   autogen-modules:
