@@ -41,7 +41,6 @@ library
       Usecase.GetColumns
       Usecase.GetEntries
       Usecase.GetEntriesByTag
-      Usecase.GetTaggedEntries
       Usecase.GetTags
       Usecase.MoveEntry
       Usecase.NewColumn
