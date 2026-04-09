@@ -1,6 +1,3 @@
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE DerivingVia #-}
-
 module Domain.Tag (
   Tag (..),
   TagID (..),
@@ -21,13 +18,16 @@ data Tag = Tag
 
 newtype TagID = TagID Int
   deriving (Eq)
-  deriving (FromField) via Int
 instance Show TagID where
   show (TagID i) = show i
 instance Read TagID where
   readPrec =
     let i = readPrec :: ReadPrec Int
      in fmap TagID i
+instance ToField TagID where
+  toField (TagID i) = toField i
+instance FromField TagID where
+  fromField field_ = fmap TagID $ fromField field_
 
 instance Eq Tag where
   t1 == t2 = tagID t1 == tagID t2
@@ -38,6 +38,3 @@ instance FromRow Tag where
     Tag
       <$> (fmap TagID field)
       <*> field
-
-instance ToField TagID where
-  toField (TagID i) = toField i

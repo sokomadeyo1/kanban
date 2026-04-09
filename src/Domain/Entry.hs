@@ -1,6 +1,3 @@
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE DerivingVia #-}
-
 module Domain.Entry (
   Entry (..),
   EntryID (..),
@@ -24,17 +21,19 @@ data Entry = Entry
 
 newtype EntryID = EntryID Int
   deriving (Eq)
-  deriving (FromField) via Int
 instance Show EntryID where
   show (EntryID i) = show i
 instance Read EntryID where
   readPrec =
     let i = readPrec :: ReadPrec Int
      in fmap EntryID i
+instance ToField EntryID where
+  toField (EntryID i) = toField i
+instance FromField EntryID where
+  fromField field_ = fmap EntryID $ fromField field_
 
 instance Eq Entry where
   e1 == e2 = entryID e1 == entryID e2
-
 instance FromRow Entry where
   fromRow =
     Entry
@@ -42,6 +41,3 @@ instance FromRow Entry where
       <*> field
       <*> field
       <*> field
-
-instance ToField EntryID where
-  toField (EntryID i) = toField i

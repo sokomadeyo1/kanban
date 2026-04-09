@@ -1,6 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE DerivingVia #-}
 
 module Domain.Column (
   Column (..),
@@ -9,8 +7,8 @@ module Domain.Column (
 ) where
 
 import qualified Data.Text as T
-import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.FromField
+import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.ToField
 import Util.Class
 
@@ -26,19 +24,19 @@ data Column = Column
 
 newtype ColumnID = ColumnID Int
   deriving (Eq)
-  deriving (FromField) via Int
 instance Show ColumnID where
   show (ColumnID i) = show i
+instance ToField ColumnID where
+  toField (ColumnID i) = toField i
+instance FromField ColumnID where
+  fromField fmap_ = fmap ColumnID $ fromField fmap_
+
 instance Eq Column where
   c1 == c2 = columnID c1 == columnID c2
 instance Dummy Column where
   dummy s = Column (ColumnID 0) s
-
 instance FromRow Column where
   fromRow =
     Column
       <$> (fmap ColumnID field)
       <*> field
-
-instance ToField ColumnID where
-  toField (ColumnID i) = toField i

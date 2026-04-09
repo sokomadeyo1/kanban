@@ -1,6 +1,3 @@
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE DerivingVia #-}
-
 module Domain.User (
   User (..),
   UserID (..),
@@ -20,12 +17,13 @@ data User = User
 
 newtype UserID = UserID Int
   deriving (Eq)
-  deriving (FromField) via Int
 instance Show UserID where
   show (UserID i) = show i
+instance FromField UserID where
+  fromField field_ = fmap UserID $ fromField field_
+
 instance Eq User where
   u1 == u2 = userID u1 == userID u2
-
 instance FromRow User where
   fromRow =
     User
