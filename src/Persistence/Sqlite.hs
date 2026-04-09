@@ -287,7 +287,6 @@ getTaggedEntries = do
       , "\""
       ]
     ) :: IO [(EntryID, T.Text, T.Text, T.Text, String, String)]
-  print entries
   return $ Right $ map castTaggedEntry entries
 
 getEntriesByColumn :: ColumnID -> IO (Either T.Text [(Entry, [Tag])])
