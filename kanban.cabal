@@ -25,12 +25,16 @@ source-repository head
 
 library
   exposed-modules:
+      Application
       Domain.Board
       Domain.Column
       Domain.Constraint
       Domain.Entry
       Domain.Tag
       Domain.User
+      Foundation
+      Handler.Board
+      Handler.Columns
       Persistence.Sqlite
       Usecase.AllowMove
       Usecase.DeleteColumn
@@ -65,16 +69,19 @@ library
   build-depends:
       base >=4.7 && <5
     , ghc
+    , shakespeare
     , shellwords
     , sqlite-simple
     , text
+    , yesod
+    , yesod-core
   default-language: Haskell2010
 
 executable kanban-exe
   main-is: Main.hs
   other-modules:
-      Handler
-      Repl
+      Repl.Handler
+      Repl.Repl
       Paths_kanban
   autogen-modules:
       Paths_kanban
@@ -85,9 +92,12 @@ executable kanban-exe
       base >=4.7 && <5
     , ghc
     , kanban
+    , shakespeare
     , shellwords
     , sqlite-simple
     , text
+    , yesod
+    , yesod-core
   default-language: Haskell2010
 
 test-suite kanban-test
@@ -104,7 +114,10 @@ test-suite kanban-test
       base >=4.7 && <5
     , ghc
     , kanban
+    , shakespeare
     , shellwords
     , sqlite-simple
     , text
+    , yesod
+    , yesod-core
   default-language: Haskell2010

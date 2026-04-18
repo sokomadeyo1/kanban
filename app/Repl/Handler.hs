@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Handler (Handler (..), handle) where
+module Repl.Handler (Handler (..), handle) where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO

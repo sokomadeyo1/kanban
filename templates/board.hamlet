@@ -1,0 +1,15 @@
+<h1 .title>Board
+<div .container>
+  $if null entries
+    <p>No entries.
+  $else
+    <ul .entries>
+      $forall (entry, tags) <- entries
+        <li>
+          #{entryColName entry}
+          #{pretty $ entryID entry}:
+          <b>#{entryTitle entry}
+          <br>
+          $forall tag <- tags
+            <span .tag>#{tagName tag}
+          <p>#{entryDesc entry}

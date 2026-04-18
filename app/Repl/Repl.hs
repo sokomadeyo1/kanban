@@ -1,14 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Repl (run) where
+module Repl.Repl (replMain) where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Domain.Entry
-import qualified Handler
+import qualified Repl.Handler as Handler
 import qualified ShellWords
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
+import Control.Monad (forever)
+
+replMain :: IO ()
+replMain = forever run
 
 prompt :: T.Text
 prompt = "==> "

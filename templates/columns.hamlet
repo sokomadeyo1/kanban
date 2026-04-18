@@ -1,0 +1,9 @@
+<h1 .title>Columns
+<div .container>
+  $if null columns
+    <p>No columns.
+  $else
+    <ul .columns>
+      $forall column <- columns
+        <li>
+          <h3>#{pretty column}

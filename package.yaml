@@ -22,9 +22,12 @@ description:         Please see the README on GitHub at <https://github.com/soko
 dependencies:
 - base >= 4.7 && < 5
 - ghc
+- shakespeare
 - shellwords
 - sqlite-simple
 - text
+- yesod
+- yesod-core
 
 ghc-options:
 - -Wall
