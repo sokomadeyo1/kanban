@@ -5,5 +5,5 @@
   $else
     <ul .columns>
       $forall column <- columns
-        <li>
-          <h3>#{pretty column}
+        <li .column>
+          <h3 .column-title>#{columnTitle column}

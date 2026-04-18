@@ -5,11 +5,12 @@
   $else
     <ul .entries>
       $forall (entry, tags) <- entries
-        <li>
-          #{entryColName entry}
-          #{pretty $ entryID entry}:
-          <b>#{entryTitle entry}
+        <li .entry>
+          <span .column-title>#{entryColName entry}
+          <span .entry-id>#{pretty $ entryID entry}
+          :
+          <b .entry-title>#{entryTitle entry}
           <br>
           $forall tag <- tags
             <span .tag>#{tagName tag}
-          <p>#{entryDesc entry}
+          <p .entry-contents>#{entryDesc entry}

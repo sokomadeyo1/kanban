@@ -9,9 +9,9 @@ $doctype 5
     <!-- Navbar -->
     <nav .navbar>
       <div .container>
-        <ul .navbar>
+        <ul .navbarlist>
           $forall (label, route) <- navbarItems
-            <li>
+            <li .navbaritem>
               <a href="@{route}">#{label}
 
     <!-- Page contents -->

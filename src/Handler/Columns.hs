@@ -7,7 +7,6 @@ module Handler.Columns (getColumnsR) where
 import Domain.Column
 import Foundation
 import Usecase.GetColumns
-import Util.PrettyPrint
 import Yesod
 
 getColumnsR :: Handler Html
