@@ -1,0 +1,27 @@
+<h1 .column-title>#{colname}
+
+<h2>Entries
+<div .container>
+  $if null entries
+    <p>No entries.
+  $else
+    <ul .entries>
+      $forall (entry, tags) <- entries
+        <li .entry>
+          <span .entry-id>#{pretty $ entryID entry}
+          :
+          <b .entry-title>#{entryTitle entry}
+          <br>
+          $forall tag <- tags
+            <span .tag-name>#{tagName tag}
+          <p .entry-contents>#{entryDesc entry}
+          <a href=@{EntryR $ getid entry}>Edit entry
+          <hr>
+
+<!-- Rename form 
+<form method=post action=@{EntryR $ getid entry} enctype=#{enctype}>
+  ^{widget}
+  <button>Update
+
+<form method=post action=@{DeleteEntryR $ getid entry}>
+  <button>Delete-->

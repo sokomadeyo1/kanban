@@ -10,12 +10,9 @@ import Domain.Tag
 import Foundation
 import Usecase.GetEntries
 import Usecase.NewEntry
+import Util.Cast (getid, maybeToMonoid)
 import Util.PrettyPrint
 import Yesod
-import Util.Cast (maybeToMonoid)
-
-getid :: Entry -> Int
-getid = (\(EntryID i) -> i) . entryID
 
 postForm :: Html -> MForm Handler (FormResult (T.Text, T.Text), Widget)
 postForm =

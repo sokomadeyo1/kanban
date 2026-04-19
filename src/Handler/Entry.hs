@@ -14,12 +14,9 @@ import Usecase.GetColumns
 import Usecase.GetOneEntry
 import Usecase.MoveEntry
 import Usecase.RenameEntry
-import Util.Cast (maybeToMonoid)
+import Util.Cast (getid, maybeToMonoid)
 import Util.PrettyPrint
 import Yesod
-
-getid :: Entry -> Int
-getid = (\(EntryID i) -> i) . entryID
 
 entryFormGen :: Entry -> [T.Text] -> Html -> MForm Handler (FormResult Entry, Widget)
 entryFormGen entry columns =

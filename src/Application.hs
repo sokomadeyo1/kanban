@@ -10,6 +10,7 @@ import Foundation
 
 -- Handlers
 import Handler.Board
+import Handler.Column
 import Handler.Columns
 import Handler.Entry
 import Handler.Tags

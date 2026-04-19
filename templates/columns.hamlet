@@ -6,4 +6,5 @@
     <ul .columns>
       $forall column <- columns
         <li .column>
-          <h3 .column-title>#{columnTitle column}
+          <h3 .column-title>
+            <a href=@{ColumnR $ columnTitle column}>#{columnTitle column}
