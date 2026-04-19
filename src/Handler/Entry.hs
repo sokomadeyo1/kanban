@@ -44,14 +44,14 @@ postEntryR i = do
   res <- liftIO $ getOneEntry $ EntryID i
   case res of
     Left _ -> defaultLayout [whamlet||]
-    Right (entry, tags) -> do
-      let formGen = entryFormGen entry
+    Right (entry_, tags) -> do
+      let formGen = entryFormGen entry_
       ((formres, widget), enctype) <- runFormPost formGen
       case formres of
-        FormMissing -> [whamlet||]
-        FormFailure _ -> [whamlet||]
+        FormMissing -> defaultLayout [whamlet||]
+        FormFailure _ -> defaultLayout [whamlet||]
         FormSuccess q -> do
           _ <- liftIO $ renameEntry (EntryID i) (entryTitle q)
           _ <- liftIO $ editEntry (EntryID i) (entryDesc q)
-          return ()
-      defaultLayout $(whamletFile "templates/entry.hamlet")
+          let entry = Entry { entryID = entryID entry_ , entryTitle = entryTitle q , entryDesc = entryDesc q , entryColName = entryColName entry_ }
+          defaultLayout $(whamletFile "templates/entry.hamlet")
