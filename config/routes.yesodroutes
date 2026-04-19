@@ -1,6 +1,6 @@
 /                  BoardR       GET POST
 /entry/#Int        EntryR       GET POST
 /columns           ColumnsR     GET
-/columns/#T.Text   ColumnR      GET
+/columns/#T.Text   ColumnR      GET POST
 /tags              TagsR        GET
 /delete/entry/#Int DeleteEntryR POST

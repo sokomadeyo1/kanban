@@ -1,5 +1,10 @@
 <h1 .column-title>#{colname}
 
+<!-- Rename form -->
+<form method=post action=@{ColumnR colname} enctype=#{enctype}>
+  ^{widget}
+  <button> Update
+
 <h2>Entries
 <div .container>
   $if null entries
@@ -17,11 +22,3 @@
           <p .entry-contents>#{entryDesc entry}
           <a href=@{EntryR $ getid entry}>Edit entry
           <hr>
-
-<!-- Rename form 
-<form method=post action=@{EntryR $ getid entry} enctype=#{enctype}>
-  ^{widget}
-  <button>Update
-
-<form method=post action=@{DeleteEntryR $ getid entry}>
-  <button>Delete-->
