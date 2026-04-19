@@ -21,6 +21,7 @@ cmdNotFound = "Command not found"
 cmdsAll :: [CmdString]
 cmdsAll =
   [ GetBoard
+  , GetEntry
   , AddEntry
   , RenameEntry
   , EditEntry
@@ -45,6 +46,7 @@ cmdsAll =
 
 data CmdString
   = GetBoard
+  | GetEntry
   | AddEntry
   | RenameEntry
   | EditEntry
@@ -73,6 +75,12 @@ data UnparsedCall = UnparsedCall CmdString Argv
 parse :: UnparsedCall -> Either T.Text Handler.Handler
 parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
   GetBoard -> Right Handler.GetEntries
+  GetEntry ->
+    if (length argv >= 1)
+      then case (readMaybe $ T.unpack (argv !! 0) :: Maybe EntryID) of
+        Nothing -> Left typeErrStr
+        Just i -> Right $ Handler.GetOneEntry i
+      else Left $ argErrStr
   AddEntry ->
     if (length argv >= 2)
       then Right $ Handler.NewEntry (argv !! 0) (argv !! 1)
@@ -195,6 +203,7 @@ help = T.unlines $ map helpCmd cmdsAll
 
 helpCmd :: CmdString -> T.Text
 helpCmd GetBoard     = "GetBoard     -- show current board's contents"
+helpCmd GetEntry     = "GetEntry     -- show selected entry"
 helpCmd AddEntry     = "AddEntry     -- create a new entry"
 helpCmd RenameEntry  = "RenameEntry  -- change the title of an entry"
 helpCmd EditEntry    = "EditEntry    -- change description of an entry"
@@ -219,6 +228,7 @@ helpCmd (Other _)    = ""
 
 usage :: Maybe CmdString -> T.Text
 usage (Just GetBoard)     = "usage: GetBoard"
+usage (Just GetEntry)     = "usage: GetEntry <entry id>"
 usage (Just AddEntry)     = "usage: AddEntry <entry title> [<entry description>]"
 usage (Just RenameEntry)  = "usage: RenameEntry <entry id> <new entry title>"
 usage (Just EditEntry)    = "usage: EditEntry <entry id> <new entry description>"
