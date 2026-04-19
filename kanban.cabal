@@ -38,6 +38,7 @@ library
       Handler.Columns
       Handler.Constr
       Handler.DeleteColumn
+      Handler.DeleteConstraint
       Handler.DeleteEntry
       Handler.Entry
       Handler.Tags

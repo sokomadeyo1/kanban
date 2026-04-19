@@ -33,3 +33,5 @@
             <b>#{columnTitle from}
             →
             <b>#{columnTitle to}
+          <form method=post action=@{DeleteConstraintR (columnTitle from) (columnTitle to)}>
+            <button>Delete

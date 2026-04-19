@@ -18,6 +18,7 @@ import Handler.Tags
 
 import Handler.DeleteEntry
 import Handler.DeleteColumn
+import Handler.DeleteConstraint
 
 import Yesod
 
