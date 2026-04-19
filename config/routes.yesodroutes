@@ -1,2 +1,3 @@
 /        BoardR   GET
 /columns ColumnsR GET
+/tags    TagsR    GET

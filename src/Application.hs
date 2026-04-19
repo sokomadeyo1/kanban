@@ -10,6 +10,7 @@ import Foundation
 -- Handlers
 import Handler.Board
 import Handler.Columns
+import Handler.Tags
 
 import Yesod
 

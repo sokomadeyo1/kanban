@@ -12,5 +12,5 @@
           <b .entry-title>#{entryTitle entry}
           <br>
           $forall tag <- tags
-            <span .tag>#{tagName tag}
+            <span .tag-name>#{tagName tag}
           <p .entry-contents>#{entryDesc entry}

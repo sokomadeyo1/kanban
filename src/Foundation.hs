@@ -20,6 +20,7 @@ instance Yesod App where
     let navbarItems =
           [ ("Board" :: T.Text, BoardR)
           , ("Columns", ColumnsR)
+          , ("Tags", TagsR)
           ]
     pc <- widgetToPageContent widget
     withUrlRenderer $(hamletFile "templates/default-layout.hamlet")
