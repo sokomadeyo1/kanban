@@ -14,3 +14,5 @@
           $forall tag <- tags
             <span .tag-name>#{tagName tag}
           <p .entry-contents>#{entryDesc entry}
+          <a href=@{EntryR $ getid entry}>Edit entry
+          <hr>

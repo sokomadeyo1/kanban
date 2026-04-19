@@ -1,3 +1,4 @@
-/        BoardR   GET
-/columns ColumnsR GET
-/tags    TagsR    GET
+/           BoardR   GET
+/entry/#Int EntryR   GET POST
+/columns    ColumnsR GET
+/tags       TagsR    GET

@@ -16,4 +16,6 @@ getBoardR = defaultLayout $ do
   board <- liftIO getEntries
   case board of
     Left _ -> [whamlet||]
-    Right entries -> $(whamletFile "templates/board.hamlet")
+    Right entries -> do
+      let getid = (\(EntryID i) -> i) . entryID
+      $(whamletFile "templates/board.hamlet")
