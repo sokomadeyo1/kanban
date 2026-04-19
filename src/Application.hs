@@ -14,6 +14,8 @@ import Handler.Columns
 import Handler.Entry
 import Handler.Tags
 
+import Handler.DeleteEntry
+
 import Yesod
 
 mkYesodDispatch "App" resourcesApp
