@@ -1,4 +1,8 @@
 <h1 .title>Board
+<h2>Create new entry
+<form method=post action=@{BoardR} enctype=#{enctype}>
+  ^{widget}
+  <button>Create
 <div .container>
   $if null entries
     <p>No entries.

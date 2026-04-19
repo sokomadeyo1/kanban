@@ -46,8 +46,8 @@ postEntryR i = do
     Left _ -> defaultLayout [whamlet||]
     Right (entry_, tags) -> do
       let formGen = entryFormGen entry_
-      ((formres, widget), enctype) <- runFormPost formGen
-      case formres of
+      ((formRes, widget), enctype) <- runFormPost formGen
+      case formRes of
         FormMissing -> defaultLayout [whamlet||]
         FormFailure _ -> defaultLayout [whamlet||]
         FormSuccess q -> do
