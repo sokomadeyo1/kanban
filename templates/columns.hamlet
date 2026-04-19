@@ -1,8 +1,8 @@
 <h1 .title>Columns
 
-<h2>Create new column
-<form method=post action=@{ColumnsR} enctype=#{enctype}>
-  ^{widget}
+<h3>Create new column
+<form method=post action=@{ColumnsR} enctype=#{enctypeCol}>
+  ^{widgetCol}
   <button>Create
 
 <div .container>
@@ -15,7 +15,13 @@
           <h3 .column-title>
             <a href=@{ColumnR $ columnTitle column}>#{columnTitle column}
 
-<h2>Current constraints
+<h2>Constraints
+
+<h3>Create new constraint
+<form method=post action=@{ConstraintR} enctype=#{enctypeConstr}>
+  ^{widgetConstr}
+  <button>Create
+
 <div .container>
   $if null constraints
     <p>No constraints.
