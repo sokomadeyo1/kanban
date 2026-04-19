@@ -24,6 +24,7 @@ module Persistence.Sqlite (
   getOneTag,
   tagEntry,
   untagEntry,
+  removeEntryTags,
   getEntriesTags,
   getEntriesByTag,
   getTaggedEntries,
@@ -262,6 +263,15 @@ untagEntry entryid tagid = do
   result <- execute conn
     "DELETE FROM EntriesTags WHERE (tagID = ? AND entryID = ?)"
     (tagid, entryid)
+  return $ Right result
+
+removeEntryTags :: EntryID -> IO (Either T.Text ())
+removeEntryTags entryid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM EntriesTags WHERE entryID = ?"
+    (Only entryid)
   return $ Right result
 
 getEntriesTags :: EntryID -> IO (Either T.Text [Tag])
