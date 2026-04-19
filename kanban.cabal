@@ -36,7 +36,9 @@ library
       Handler.Board
       Handler.Column
       Handler.Columns
+      Handler.Constr
       Handler.DeleteColumn
+      Handler.DeleteConstraint
       Handler.DeleteEntry
       Handler.Entry
       Handler.Tags
@@ -47,6 +49,7 @@ library
       Usecase.DeleteTag
       Usecase.EditEntry
       Usecase.GetColumns
+      Usecase.GetConstraints
       Usecase.GetEntries
       Usecase.GetEntriesByTag
       Usecase.GetOneEntry

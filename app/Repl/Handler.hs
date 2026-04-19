@@ -13,6 +13,7 @@ import Usecase.DeleteEntry
 import Usecase.DeleteTag
 import Usecase.EditEntry
 import Usecase.GetColumns
+import Usecase.GetConstraints
 import Usecase.GetEntriesByTag
 import Usecase.GetEntries
 import Usecase.GetOneEntry
@@ -44,6 +45,7 @@ data Handler
   | GetColumns
   | ShowColumn T.Text
   | DeleteColumn T.Text
+  | GetConstraints
   | RestrictMove T.Text T.Text
   | AllowMove T.Text T.Text
   | NewTag T.Text
@@ -125,6 +127,11 @@ handle (RestrictMove fromcol tocol) = do
       , "to"
       , pretty $ (dummy tocol :: Column)
       ]
+handle GetConstraints = do
+  res <- getConstraints
+  case res of
+    Left e -> TIO.putStrLn e
+    Right constraints -> TIO.putStr $ pretty constraints
 handle (AllowMove fromcol tocol) = do
   result <- allowMove fromcol tocol
   case result of

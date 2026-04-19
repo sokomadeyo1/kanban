@@ -8,30 +8,62 @@ import qualified Data.Text as T
 import Domain.Column
 import Foundation
 import Usecase.GetColumns
-import Yesod
+import Usecase.GetConstraints
 import Usecase.NewColumn
+import Yesod
 
-postForm :: Html -> MForm Handler (FormResult T.Text, Widget)
-postForm = renderDivs $ areq textField "Column Name" Nothing
+colForm :: Html -> MForm Handler (FormResult T.Text, Widget)
+colForm = renderDivs $ areq textField "Column Name" Nothing
+
+constrForm :: [T.Text] -> Html -> MForm Handler (FormResult (T.Text, T.Text), Widget)
+constrForm cols =
+  let
+    colList = map (\x -> (x, x)) cols
+   in
+    renderDivs $
+      (,)
+        <$> areq (selectFieldList colList) "From" Nothing
+        <*> areq (selectFieldList colList) "To"   Nothing
 
 getColumnsR :: Handler Html
 getColumnsR = do
-  ((_, widget), enctype) <- runFormPost postForm
-  result <- liftIO getColumns
-  case result of
-    Left _ -> defaultLayout [whamlet||]
-    Right columns -> defaultLayout $(whamletFile "templates/columns.hamlet")
+  colResult <- liftIO getColumns
+  columns <- case colResult of
+    Left _ -> return []
+    Right columns -> return columns
+
+  constrRes <- liftIO getConstraints
+  constraints <- case constrRes of
+    Left _ -> return []
+    Right constraints -> return constraints
+
+  let colnames = map columnTitle columns
+  ((_, widgetCol), enctypeCol) <- runFormPost colForm
+  ((_, widgetConstr), enctypeConstr) <- runFormPost $ constrForm colnames
+
+  defaultLayout $(whamletFile "templates/columns.hamlet")
 
 postColumnsR :: Handler Html
 postColumnsR = do
-  ((formRes, widget), enctype) <- runFormPost postForm
+  ((formRes, widgetCol), enctypeCol) <- runFormPost colForm
   case formRes of
     FormMissing -> return ()
     FormFailure _ -> return ()
     FormSuccess q -> do
       _ <- liftIO $ newColumn q
       return ()
-  result <- liftIO getColumns
-  case result of
-    Left _ -> defaultLayout [whamlet||]
-    Right columns -> defaultLayout $(whamletFile "templates/columns.hamlet")
+
+  colRes <- liftIO getColumns
+  columns <- case colRes of
+    Left _ -> return []
+    Right columns -> return columns
+
+  constrRes <- liftIO getConstraints
+  constraints <- case constrRes of
+    Left _ -> return []
+    Right constraints -> return constraints
+
+  let colnames = map columnTitle columns
+  ((_, widgetConstr), enctypeConstr) <- runFormPost $ constrForm colnames
+
+  defaultLayout $(whamletFile "templates/columns.hamlet")

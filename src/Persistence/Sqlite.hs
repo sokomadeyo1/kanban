@@ -14,6 +14,7 @@ module Persistence.Sqlite (
   getColumnEntries,
   getOneColumn,
   deleteColumn,
+  getConstraints,
   checkRestrict,
   restrictMove,
   allowMove,
@@ -170,6 +171,21 @@ deleteColumn columnid = do
   result <- execute conn
     "DELETE FROM Column WHERE columnID = ?"
     (Only columnid)
+  return $ Right result
+
+getConstraints :: IO (Either T.Text [(T.Text, T.Text)])
+getConstraints = do
+  conn <- open db
+  result <- query_ conn
+    (read $ unwords
+      [ "\""
+      , "SELECT c1.columnTitle, c2.columnTitle"
+      , "FROM Restrict"
+      , "JOIN Column c1 ON fromColumn = c1.columnID"
+      , "JOIN Column c2 ON toColumn = c2.columnID"
+      , "\""
+      ]
+    )
   return $ Right result
 
 checkRestrict :: ColumnID -> ColumnID -> IO (Either T.Text Bool)

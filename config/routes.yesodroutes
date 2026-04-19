@@ -1,7 +1,9 @@
-/                      BoardR        GET POST
-/entry/#Int            EntryR        GET POST
-/columns               ColumnsR      GET POST
-/columns/#T.Text       ColumnR       GET POST
-/tags                  TagsR         GET
-/delete/entry/#Int     DeleteEntryR  POST
-/delete/column/#T.Text DeleteColumnR POST
+/                                  BoardR            GET POST
+/entry/#Int                        EntryR            GET POST
+/columns                           ColumnsR          GET POST
+/columns/#T.Text                   ColumnR           GET POST
+/constraints                       ConstraintR       POST
+/tags                              TagsR             GET
+/delete/entry/#Int                 DeleteEntryR      POST
+/delete/column/#T.Text             DeleteColumnR     POST
+/delete/constraint/#T.Text/#T.Text DeleteConstraintR POST

@@ -36,6 +36,7 @@ cmdsAll =
   , ShowColumn
   , GetColumns
   , DelColumn
+  , GetConstraints
   , Restrict
   , Allow
   , NewTag
@@ -61,6 +62,7 @@ data CmdString
   | ShowColumn
   | GetColumns
   | DelColumn
+  | GetConstraints
   | Restrict
   | Allow
   | NewTag
@@ -136,6 +138,7 @@ parse (UnparsedCall cmdstr (Argv argv)) = case cmdstr of
     if (length argv >= 2)
       then Right $ Handler.RestrictMove (argv !! 0) (argv !! 1)
       else Left $ argErrStr
+  GetConstraints -> Right Handler.GetConstraints
   Allow ->
     if (length argv >= 2)
       then Right $ Handler.AllowMove (argv !! 0) (argv !! 1)
@@ -206,55 +209,57 @@ help :: T.Text
 help = T.unlines $ map helpCmd cmdsAll
 
 helpCmd :: CmdString -> T.Text
-helpCmd GetBoard     = "GetBoard     -- show current board's contents"
-helpCmd GetEntry     = "GetEntry     -- show selected entry"
-helpCmd AddEntry     = "AddEntry     -- create a new entry"
-helpCmd RenameEntry  = "RenameEntry  -- change the title of an entry"
-helpCmd EditEntry    = "EditEntry    -- change description of an entry"
-helpCmd MoveEntry    = "MoveEntry    -- move an entry to another column"
-helpCmd DelEntry     = "DelEntry     -- delete an entry"
-helpCmd AddColumn    = "AddColumn    -- create a new column"
-helpCmd RenameColumn = "RenameColumn -- change the name of a column"
-helpCmd ShowColumn   = "ShowColumn   -- list entries from one column"
-helpCmd GetColumns   = "GetColumns   -- show a list of all columns"
-helpCmd DelColumn    = "DelColumn    -- delete a column"
-helpCmd Restrict     = "Restrict     -- restrict moving from one column to another"
-helpCmd Allow        = "Allow        -- allow moving from one column to another"
-helpCmd NewTag       = "NewTag       -- create a new tag"
-helpCmd RenameTag    = "RenameTag    -- change the name of a tag"
-helpCmd GetTags      = "GetTags      -- show a list of all tags"
-helpCmd ByTag        = "ByTag        -- get all entries with specified tag"
-helpCmd TagEntry     = "TagEntry     -- add a tag to the entry"
-helpCmd UntagEntry   = "UntagEntry   -- remove a tag from the entry"
-helpCmd DeleteTag    = "DeleteTag    -- delete the specified tag"
-helpCmd Help         = "Help         -- show this message. Use help <cmd> for more details"
-helpCmd (Other _)    = ""
+helpCmd GetBoard       = "GetBoard       -- show current board's contents"
+helpCmd GetEntry       = "GetEntry       -- show selected entry"
+helpCmd AddEntry       = "AddEntry       -- create a new entry"
+helpCmd RenameEntry    = "RenameEntry    -- change the title of an entry"
+helpCmd EditEntry      = "EditEntry      -- change description of an entry"
+helpCmd MoveEntry      = "MoveEntry      -- move an entry to another column"
+helpCmd DelEntry       = "DelEntry       -- delete an entry"
+helpCmd AddColumn      = "AddColumn      -- create a new column"
+helpCmd RenameColumn   = "RenameColumn   -- change the name of a column"
+helpCmd ShowColumn     = "ShowColumn     -- list entries from one column"
+helpCmd GetColumns     = "GetColumns     -- show a list of all columns"
+helpCmd DelColumn      = "DelColumn      -- delete a column"
+helpCmd GetConstraints = "GetConstraints -- get current move restrictions"
+helpCmd Restrict       = "Restrict       -- restrict moving from one column to another"
+helpCmd Allow          = "Allow          -- allow moving from one column to another"
+helpCmd NewTag         = "NewTag         -- create a new tag"
+helpCmd RenameTag      = "RenameTag      -- change the name of a tag"
+helpCmd GetTags        = "GetTags        -- show a list of all tags"
+helpCmd ByTag          = "ByTag          -- get all entries with specified tag"
+helpCmd TagEntry       = "TagEntry       -- add a tag to the entry"
+helpCmd UntagEntry     = "UntagEntry     -- remove a tag from the entry"
+helpCmd DeleteTag      = "DeleteTag      -- delete the specified tag"
+helpCmd Help           = "Help           -- show this message. Use help <cmd> for more details"
+helpCmd (Other _)      = ""
 
 usage :: Maybe CmdString -> T.Text
-usage (Just GetBoard)     = "usage: GetBoard"
-usage (Just GetEntry)     = "usage: GetEntry <entry id>"
-usage (Just AddEntry)     = "usage: AddEntry <entry title> [<entry description>]"
-usage (Just RenameEntry)  = "usage: RenameEntry <entry id> <new entry title>"
-usage (Just EditEntry)    = "usage: EditEntry <entry id> <new entry description>"
-usage (Just MoveEntry)    = "usage: MoveEntry <entry id> <column name>"
-usage (Just DelEntry)     = "usage: DelEntry <entry id>"
-usage (Just AddColumn)    = "usage: AddColumn <column name>"
-usage (Just RenameColumn) = "usage: RenameColumn <old column name> <new column name>"
-usage (Just ShowColumn)   = "usage: ShowColumn <column name>"
-usage (Just GetColumns)   = "usage: GetColumns"
-usage (Just DelColumn)    = "usage: DelColumn <column name>"
-usage (Just Restrict)     = "usage: Restrict <column name> <column name>"
-usage (Just Allow)        = "usage: Allow <column name> <column name>"
-usage (Just NewTag)       = "usage: NewTag <tag name>"
-usage (Just RenameTag)    = "usage: RenameTag <old tag name> <new tag name>"
-usage (Just GetTags)      = "usage: GetTags"
-usage (Just ByTag)        = "usage: ByTag <tag name>"
-usage (Just TagEntry)     = "usage: TagEntry <entry id> <tag name>"
-usage (Just UntagEntry)   = "usage: UntagEntry <entry id> <tag name>"
-usage (Just DeleteTag)    = "usage: DeleteTag <tag name>"
-usage (Just Help)         = "usage: help [<cmd>]"
-usage Nothing             = help
-usage (Just (Other _))    = help
+usage (Just GetBoard)       = "usage: GetBoard"
+usage (Just GetEntry)       = "usage: GetEntry <entry id>"
+usage (Just AddEntry)       = "usage: AddEntry <entry title> [<entry description>]"
+usage (Just RenameEntry)    = "usage: RenameEntry <entry id> <new entry title>"
+usage (Just EditEntry)      = "usage: EditEntry <entry id> <new entry description>"
+usage (Just MoveEntry)      = "usage: MoveEntry <entry id> <column name>"
+usage (Just DelEntry)       = "usage: DelEntry <entry id>"
+usage (Just AddColumn)      = "usage: AddColumn <column name>"
+usage (Just RenameColumn)   = "usage: RenameColumn <old column name> <new column name>"
+usage (Just ShowColumn)     = "usage: ShowColumn <column name>"
+usage (Just GetColumns)     = "usage: GetColumns"
+usage (Just DelColumn)      = "usage: DelColumn <column name>"
+usage (Just GetConstraints) = "usage: GetConstraints"
+usage (Just Restrict)       = "usage: Restrict <column name> <column name>"
+usage (Just Allow)          = "usage: Allow <column name> <column name>"
+usage (Just NewTag)         = "usage: NewTag <tag name>"
+usage (Just RenameTag)      = "usage: RenameTag <old tag name> <new tag name>"
+usage (Just GetTags)        = "usage: GetTags"
+usage (Just ByTag)          = "usage: ByTag <tag name>"
+usage (Just TagEntry)       = "usage: TagEntry <entry id> <tag name>"
+usage (Just UntagEntry)     = "usage: UntagEntry <entry id> <tag name>"
+usage (Just DeleteTag)      = "usage: DeleteTag <tag name>"
+usage (Just Help)           = "usage: help [<cmd>]"
+usage Nothing               = help
+usage (Just (Other _))      = help
 
 badCmd :: T.Text -> T.Text
 badCmd = T.concat . ([cmdNotFound, ": "] ++) . (: [])
