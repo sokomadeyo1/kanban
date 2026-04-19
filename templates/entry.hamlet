@@ -11,3 +11,6 @@ $forall tag <- tags
 <form method=post action=@{EntryR $ getid entry} enctype=#{enctype}>
   ^{widget}
   <button>Update
+
+<form method=post action=@{DeleteEntryR $ getid entry}>
+  <button>Delete

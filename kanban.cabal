@@ -35,6 +35,7 @@ library
       Foundation
       Handler.Board
       Handler.Columns
+      Handler.DeleteEntry
       Handler.Entry
       Handler.Tags
       Persistence.Sqlite
