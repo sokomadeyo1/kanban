@@ -1,4 +1,4 @@
-/           BoardR   GET
+/           BoardR   GET POST
 /entry/#Int EntryR   GET POST
 /columns    ColumnsR GET
 /tags       TagsR    GET
