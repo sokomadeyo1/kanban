@@ -28,6 +28,7 @@ dependencies:
 - text
 - yesod
 - yesod-core
+- yesod-form
 
 ghc-options:
 - -Wall

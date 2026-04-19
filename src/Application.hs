@@ -2,6 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Application (appMain) where
 
@@ -10,6 +11,7 @@ import Foundation
 -- Handlers
 import Handler.Board
 import Handler.Columns
+import Handler.Entry
 import Handler.Tags
 
 import Yesod

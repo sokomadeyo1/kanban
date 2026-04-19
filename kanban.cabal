@@ -35,6 +35,7 @@ library
       Foundation
       Handler.Board
       Handler.Columns
+      Handler.Entry
       Handler.Tags
       Persistence.Sqlite
       Usecase.AllowMove
@@ -77,6 +78,7 @@ library
     , text
     , yesod
     , yesod-core
+    , yesod-form
   default-language: Haskell2010
 
 executable kanban-exe
@@ -100,6 +102,7 @@ executable kanban-exe
     , text
     , yesod
     , yesod-core
+    , yesod-form
   default-language: Haskell2010
 
 test-suite kanban-test
@@ -122,4 +125,5 @@ test-suite kanban-test
     , text
     , yesod
     , yesod-core
+    , yesod-form
   default-language: Haskell2010

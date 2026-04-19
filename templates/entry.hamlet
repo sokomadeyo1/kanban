@@ -1,0 +1,13 @@
+<span .column-title>#{entryColName entry}
+<span .entry-id>#{pretty $ entryID entry}
+:
+<b .entry-title>#{entryTitle entry}
+<br>
+$forall tag <- tags
+  <span .tag-name>#{tagName tag}
+<p .entry-contents>#{entryDesc entry}
+
+<!-- Rename form -->
+<form method=post action=@{EntryR $ getid entry} enctype=#{enctype}>
+  ^{widget}
+  <button>Update

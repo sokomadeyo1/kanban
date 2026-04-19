@@ -1,11 +1,13 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
 -- Ignoring some warnings for Template Haskell reasons
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Foundation where
 
@@ -24,3 +26,7 @@ instance Yesod App where
           ]
     pc <- widgetToPageContent widget
     withUrlRenderer $(hamletFile "templates/default-layout.hamlet")
+
+-- Required for using forms
+instance RenderMessage App FormMessage where
+  renderMessage _ _ = defaultFormMessage
