@@ -36,6 +36,7 @@ library
       Handler.Board
       Handler.Column
       Handler.Columns
+      Handler.DeleteColumn
       Handler.DeleteEntry
       Handler.Entry
       Handler.Tags
