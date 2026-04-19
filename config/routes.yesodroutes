@@ -3,7 +3,9 @@
 /columns                           ColumnsR          GET POST
 /columns/#T.Text                   ColumnR           GET POST
 /constraints                       ConstraintR       POST
-/tags                              TagsR             GET
+/tags                              TagsR             GET POST
+/tags/#T.Text                      TagR              GET POST
 /delete/entry/#Int                 DeleteEntryR      POST
 /delete/column/#T.Text             DeleteColumnR     POST
 /delete/constraint/#T.Text/#T.Text DeleteConstraintR POST
+/delete/tag/#T.Text                DeleteTagR        POST

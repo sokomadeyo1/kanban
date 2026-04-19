@@ -1,4 +1,10 @@
 <h1 .title>Tags
+
+<h3>Create new tag
+<form method=post action=@{TagsR} enctype=#{enctype}>
+  ^{widget}
+  <button>Create
+
 <div .container>
   $if null tags
     <p>No tags.
@@ -6,4 +12,5 @@
     <ul .tags>
       $forall tag <- tags
         <li .tag>
-          <h3 .tag-name>#{pretty tag}
+          <h3 .tag-name>
+            <a href=@{TagR $ tagName tag}>#{tagName tag}
