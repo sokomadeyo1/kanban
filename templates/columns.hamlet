@@ -1,4 +1,8 @@
 <h1 .title>Columns
+<h2>Create new column
+<form method=post action=@{ColumnsR} enctype=#{enctype}>
+  ^{widget}
+  <button>Create
 <div .container>
   $if null columns
     <p>No columns.
