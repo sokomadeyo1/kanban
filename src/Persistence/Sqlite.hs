@@ -272,20 +272,24 @@ getEntriesTags entryid = do
     (Only entryid)
   return $ Right tags
 
-getEntriesByTag :: TagID -> IO (Either T.Text [Entry])
+getEntriesByTag :: TagID -> IO (Either T.Text [(Entry, [Tag])])
 getEntriesByTag tagid = do
   conn <- open db
   entries <- query conn
     (read $ unwords
       [ "\""
-      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
-      , "FROM Entry JOIN Column ON columnID = entryColumn"
-      , "NATURAL JOIN EntriesTags"
+      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle, json_group_array(Tag.tagID), json_group_array(tagName)"
+      , "FROM Entry"
+      , "JOIN Column ON columnID = entryColumn"
+      , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
+      , "LEFT JOIN Tag ON EntriesTags.tagID = Tag.tagID"
       , "WHERE EntriesTags.tagID = ?"
+      , "GROUP BY Entry.entryID"
+      , "ORDER BY columnID, Tag.tagID"
       , "\""
       ]
-    ) (Only tagid)
-  return $ Right entries
+    ) (Only tagid) :: IO [(EntryID, T.Text, T.Text, T.Text, String, String)]
+  return $ Right $ map castTaggedEntry entries
 
 getTaggedEntries :: IO (Either T.Text [(Entry, [Tag])])
 getTaggedEntries = do
