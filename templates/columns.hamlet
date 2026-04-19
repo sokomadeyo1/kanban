@@ -30,8 +30,8 @@
       $forall (from, to) <- constraints
         <li .constraint>
           <p>
-            <b>#{columnTitle from}
+            <b>#{from}
             →
-            <b>#{columnTitle to}
-          <form method=post action=@{DeleteConstraintR (columnTitle from) (columnTitle to)}>
+            <b>#{to}
+          <form method=post action=@{DeleteConstraintR from to}>
             <button>Delete

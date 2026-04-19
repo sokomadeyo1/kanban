@@ -10,6 +10,9 @@ import Domain.Tag
 class Pretty a where
   pretty :: a -> T.Text
 
+instance Pretty T.Text where
+  pretty t = t
+
 instance Pretty Entry where
   pretty (Entry eID title "" column) =
     T.unwords [T.show eID, T.concat ["[", column, "]"], title, "\n"]

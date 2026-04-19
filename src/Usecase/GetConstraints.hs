@@ -2,12 +2,10 @@ module Usecase.GetConstraints (getConstraints) where
 
 import qualified Persistence.Sqlite as Persistence
 import qualified Data.Text as T
-import Domain.Column
-import Util.Class (dummy)
 
-getConstraints :: IO (Either T.Text [(Column, Column)])
+getConstraints :: IO (Either T.Text [(T.Text, T.Text)])
 getConstraints = do
   res <- Persistence.getConstraints
   case res of
     Left e -> return $ Left e
-    Right constraints -> return $ Right $ map (\(x, y) -> (dummy x, dummy y)) constraints
+    Right constraints -> return $ Right constraints
