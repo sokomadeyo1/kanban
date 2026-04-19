@@ -1,4 +1,8 @@
 <h1 .title>Columns
+<h2>Create new column
+<form method=post action=@{ColumnsR} enctype=#{enctype}>
+  ^{widget}
+  <button>Create
 <div .container>
   $if null columns
     <p>No columns.
@@ -6,4 +10,5 @@
     <ul .columns>
       $forall column <- columns
         <li .column>
-          <h3 .column-title>#{columnTitle column}
+          <h3 .column-title>
+            <a href=@{ColumnR $ columnTitle column}>#{columnTitle column}

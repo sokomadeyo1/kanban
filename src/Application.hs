@@ -10,11 +10,13 @@ import Foundation
 
 -- Handlers
 import Handler.Board
+import Handler.Column
 import Handler.Columns
 import Handler.Entry
 import Handler.Tags
 
 import Handler.DeleteEntry
+import Handler.DeleteColumn
 
 import Yesod
 

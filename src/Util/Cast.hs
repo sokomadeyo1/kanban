@@ -1,5 +1,6 @@
 module Util.Cast (
   castTaggedEntry,
+  getid,
   maybeToMonoid,
 ) where
 
@@ -21,3 +22,6 @@ castTaggedEntry (eid, title, desc, col, tagids_, tagnames_) =
 maybeToMonoid :: (Monoid m) => Maybe m -> m
 maybeToMonoid Nothing = mempty
 maybeToMonoid (Just x) = x
+
+getid :: Entry -> Int
+getid = (\(EntryID i) -> i) . entryID
