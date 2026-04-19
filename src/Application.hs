@@ -14,11 +14,13 @@ import Handler.Column
 import Handler.Columns
 import Handler.Constr
 import Handler.Entry
+import Handler.Tag
 import Handler.Tags
 
 import Handler.DeleteEntry
 import Handler.DeleteColumn
 import Handler.DeleteConstraint
+import Handler.DeleteTag
 
 import Yesod
 

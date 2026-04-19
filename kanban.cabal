@@ -40,7 +40,9 @@ library
       Handler.DeleteColumn
       Handler.DeleteConstraint
       Handler.DeleteEntry
+      Handler.DeleteTag
       Handler.Entry
+      Handler.Tag
       Handler.Tags
       Persistence.Sqlite
       Usecase.AllowMove
@@ -62,6 +64,7 @@ library
       Usecase.RenameEntry
       Usecase.RenameTag
       Usecase.RestrictMove
+      Usecase.SetEntryTags
       Usecase.ShowColumn
       Usecase.TagEntry
       Usecase.UntagEntry
