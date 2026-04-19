@@ -8,8 +8,9 @@ import qualified Data.Text as T
 import Domain.Column
 import Foundation
 import Usecase.GetColumns
-import Yesod
+import Usecase.GetConstraints
 import Usecase.NewColumn
+import Yesod
 
 postForm :: Html -> MForm Handler (FormResult T.Text, Widget)
 postForm = renderDivs $ areq textField "Column Name" Nothing
@@ -17,10 +18,17 @@ postForm = renderDivs $ areq textField "Column Name" Nothing
 getColumnsR :: Handler Html
 getColumnsR = do
   ((_, widget), enctype) <- runFormPost postForm
-  result <- liftIO getColumns
-  case result of
-    Left _ -> defaultLayout [whamlet||]
-    Right columns -> defaultLayout $(whamletFile "templates/columns.hamlet")
+  colResult <- liftIO getColumns
+  columns <- case colResult of
+    Left _ -> return []
+    Right columns -> return columns
+
+  constrRes <- liftIO getConstraints
+  constraints <- case constrRes of
+    Left _ -> return []
+    Right constraints -> return constraints
+
+  defaultLayout $(whamletFile "templates/columns.hamlet")
 
 postColumnsR :: Handler Html
 postColumnsR = do
@@ -31,7 +39,15 @@ postColumnsR = do
     FormSuccess q -> do
       _ <- liftIO $ newColumn q
       return ()
-  result <- liftIO getColumns
-  case result of
-    Left _ -> defaultLayout [whamlet||]
-    Right columns -> defaultLayout $(whamletFile "templates/columns.hamlet")
+
+  colRes <- liftIO getColumns
+  columns <- case colRes of
+    Left _ -> return []
+    Right columns -> return columns
+
+  constrRes <- liftIO getConstraints
+  constraints <- case constrRes of
+    Left _ -> return []
+    Right constraints -> return constraints
+
+  defaultLayout $(whamletFile "templates/columns.hamlet")

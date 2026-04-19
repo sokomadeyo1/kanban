@@ -1,8 +1,10 @@
 <h1 .title>Columns
+
 <h2>Create new column
 <form method=post action=@{ColumnsR} enctype=#{enctype}>
   ^{widget}
   <button>Create
+
 <div .container>
   $if null columns
     <p>No columns.
@@ -12,3 +14,16 @@
         <li .column>
           <h3 .column-title>
             <a href=@{ColumnR $ columnTitle column}>#{columnTitle column}
+
+<h2>Current constraints
+<div .container>
+  $if null constraints
+    <p>No constraints.
+  $else
+    <ul .constraints>
+      $forall (from, to) <- constraints
+        <li .constraint>
+          <p>
+            <b>#{columnTitle from}
+            →
+            <b>#{columnTitle to}
