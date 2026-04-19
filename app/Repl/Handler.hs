@@ -15,6 +15,7 @@ import Usecase.EditEntry
 import Usecase.GetColumns
 import Usecase.GetEntriesByTag
 import Usecase.GetEntries
+import Usecase.GetOneEntry
 import Usecase.GetTags
 import Usecase.MoveEntry
 import Usecase.NewColumn
@@ -32,6 +33,7 @@ import Util.PrettyPrint
 
 data Handler
   = GetEntries
+  | GetOneEntry EntryID
   | NewEntry T.Text T.Text
   | MoveEntry EntryID T.Text
   | RenameEntry EntryID T.Text
@@ -55,6 +57,11 @@ data Handler
 handle :: Handler -> IO ()
 handle GetEntries = do
   result <- getEntries
+  case result of
+    Left e -> TIO.putStrLn e
+    Right r -> TIO.putStr $ pretty r
+handle (GetOneEntry i) = do
+  result <- getOneEntry i
   case result of
     Left e -> TIO.putStrLn e
     Right r -> TIO.putStr $ pretty r
