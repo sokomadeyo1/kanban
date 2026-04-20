@@ -12,18 +12,20 @@ Kanban board written in haskell with yesod.
    curl -sSL https://get.haskellstack.org/ | sh
    ```
 
-2. Clone and build this project, installing dependencies:
+2. Install sqlite3 using your packet manager.
+
+3. Clone and build this project, installing dependencies:
 
    ```shell
    git clone https://github.com/sokomadeyo1/kanban.git && cd kanban
    stack build
    ```
 
-3. Setup the database by executing `scripts/setup_db.sh`
+4. Setup the database by executing `scripts/setup_db.sh`
 
-4. Run the application with `stack run` or `stack exec kanban-exe`
+5. Run the application with `stack run` or `stack exec kanban-exe`
 
-5. View the site at <https://localhost:3000/>
+6. View the site at <https://localhost:3000/>
 
 ## Project structure
 
