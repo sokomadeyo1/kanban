@@ -4,7 +4,7 @@
 <b .entry-title>#{entryTitle entry}
 <br>
 $forall tag <- tags
-  <span .tag-name>#{tagName tag}
+  <span .tag-name>#{pretty tag}
 <p .entry-contents>#{entryDesc entry}
 
 <!-- Rename form -->

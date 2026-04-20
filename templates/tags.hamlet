@@ -13,4 +13,4 @@
       $forall tag <- tags
         <li .tag>
           <h3 .tag-name>
-            <a href=@{TagR $ tagName tag}>#{tagName tag}
+            <a href=@{TagR $ tagName tag}>#{pretty tag}
