@@ -20,6 +20,8 @@ import Yesod
 import Usecase.GetTags
 import Usecase.SetEntryTags
 import Util.Class (dummy)
+import Error
+import Data.Either (lefts)
 
 entryFormGen ::
   Entry ->
@@ -44,20 +46,20 @@ entryFormGen entry columns alltags tags =
 
 getEntryR :: Int -> Handler Html
 getEntryR i = do
+  getcols <- liftIO getColumns
+  cols <- case getcols of
+    Left _ -> return []
+    Right cols -> return cols
+
+  gettags <- liftIO getTags
+  alltags <- case gettags of
+    Left _ -> return []
+    Right alltags -> return alltags
+
   res <- liftIO $ getOneEntry $ EntryID i
   case res of
-    Left _ -> defaultLayout [whamlet||]
+    Left e -> defaultLayout $ errorWidget "Couldn't get entry" e
     Right (entry, tags) -> do
-      getcols <- liftIO getColumns
-      cols <- case getcols of
-        Left _ -> return []
-        Right cols -> return cols
-
-      gettags <- liftIO getTags
-      alltags <- case gettags of
-        Left _ -> return []
-        Right alltags -> return alltags
-
       let colnames = map columnTitle cols
       let tagnames = map tagName tags
       let alltagnames = map tagName alltags
@@ -67,33 +69,41 @@ getEntryR i = do
 
 postEntryR :: Int -> Handler Html
 postEntryR i = do
+  getcols <- liftIO getColumns
+  cols <- case getcols of
+    Left _ -> return []
+    Right cols -> return cols
+
+  gettags <- liftIO getTags
+  alltags <- case gettags of
+    Left _ -> return []
+    Right alltags -> return alltags
+
   res <- liftIO $ getOneEntry $ EntryID i
   case res of
-    Left _ -> defaultLayout [whamlet||]
+    Left e -> defaultLayout $ errorWidget "Couldn't get entry" e
     Right (entry_, tags_) -> do
-      getcols <- liftIO getColumns
-      cols <- case getcols of
-        Left _ -> return []
-        Right cols -> return cols
-
-      gettags <- liftIO getTags
-      alltags <- case gettags of
-        Left _ -> return []
-        Right alltags -> return alltags
-
       let colnames = map columnTitle cols
       let tagnames = map tagName tags_
       let alltagnames = map tagName alltags
       let formGen = entryFormGen entry_ colnames alltagnames tagnames
       ((formRes, widget), enctype) <- runFormPost formGen
-      case formRes of
-        FormMissing -> defaultLayout [whamlet||]
-        FormFailure e -> defaultLayout [whamlet|#{show e}|]
+      ((entry, tags), err) <- case formRes of
+        FormMissing -> return $ ((entry_, tags_), Just ("Error", "Form missing"))
+        FormFailure e -> return $ ((entry_, tags_), Just ("Error", T.append "Form missing" $ T.show e))
         FormSuccess (e, ts) -> do
-          _ <- liftIO $ renameEntry (EntryID i) (entryTitle e)
-          _ <- liftIO $ editEntry (EntryID i) (entryDesc e)
-          _ <- liftIO $ moveEntry (EntryID i) (entryColName e)
-          _ <- liftIO $ setEntryTags (EntryID i) ts
+          renameRes <- liftIO $ renameEntry (EntryID i) (entryTitle e)
+          editRes <- liftIO $ editEntry (EntryID i) (entryDesc e)
+          moveRes <- liftIO $ moveEntry (EntryID i) (entryColName e)
+          tagRes <- liftIO $ setEntryTags (EntryID i) ts
           let entry = Entry (entryID entry_) (entryTitle e) (entryDesc e) (entryColName entry_)
           let tags = map dummy ts
-          defaultLayout $(whamletFile "templates/entry.hamlet")
+          err <- case lefts [renameRes, editRes, moveRes, tagRes] of
+            [] -> return Nothing
+            errs -> return $ Just ("Error", T.unlines errs)
+          return ((entry, tags), err)
+
+      errW <- case err of
+        Nothing -> return mempty
+        Just (errMsg, errDesc) -> return $ errorWidget errMsg errDesc
+      defaultLayout $ errW <> $(whamletFile "templates/entry.hamlet")

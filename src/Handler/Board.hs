@@ -13,6 +13,7 @@ import Usecase.NewEntry
 import Util.Cast (getid, maybeToMonoid)
 import Util.PrettyPrint
 import Yesod
+import Error
 
 postForm :: Html -> MForm Handler (FormResult (T.Text, T.Text), Widget)
 postForm =
@@ -27,23 +28,28 @@ postForm =
 getBoardR :: Handler Html
 getBoardR = do
   ((_, widget), enctype) <- runFormPost postForm
-  board <- liftIO getEntries
-  case board of
-    Left _ -> defaultLayout [whamlet||]
-    Right entries -> do
-      defaultLayout $(whamletFile "templates/board.hamlet")
+  res <- liftIO getEntries
+  entries <- case res of
+    Left _ -> return []
+    Right entries -> return entries
+  defaultLayout $(whamletFile "templates/board.hamlet")
 
 postBoardR :: Handler Html
 postBoardR = do
   ((formRes, widget), enctype) <- runFormPost postForm
-  case formRes of
-    FormMissing -> return ()
-    FormFailure _ -> return ()
+  err <- case formRes of
+    FormMissing -> return $ Just ("Error", "Form missing")
+    FormFailure e -> return $ Just ("Error", T.append "Form failure: " $ T.show e)
     FormSuccess q -> do
-      _ <- liftIO $ newEntry (fst q) (snd q)
-      return ()
+      res <- liftIO $ newEntry (fst q) (snd q)
+      case res of
+        Left e -> return $ Just ("Error", e)
+        Right _ -> return Nothing
   res <- liftIO getEntries
-  case res of
-    Left _ -> defaultLayout [whamlet||]
-    Right entries ->
-      defaultLayout $(whamletFile "templates/board.hamlet")
+  entries <- case res of
+    Left _ -> return []
+    Right entries -> return entries
+  errW <- case err of
+    Nothing -> return mempty
+    Just (errMsg, errDesc) -> return $ errorWidget errMsg errDesc
+  defaultLayout $ errW <> $(whamletFile "templates/board.hamlet")

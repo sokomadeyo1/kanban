@@ -13,6 +13,7 @@ import Usecase.GetEntriesByTag
 import Util.Cast (getid)
 import Util.PrettyPrint
 import Yesod
+import Error
 
 tagFormGen :: T.Text -> Html -> MForm Handler (FormResult T.Text, Widget)
 tagFormGen colname = renderDivs $ areq textField "Tag name" (Just $ colname)
@@ -22,28 +23,30 @@ getTagR tagname = do
   res <- liftIO $ getEntriesByTag tagname
   let formGen = tagFormGen tagname
   ((_, widget), enctype) <- runFormPost formGen
-  case res of
-    Left _ -> do
-      let entries = [] :: [(Entry, [Tag])]
-      defaultLayout $(whamletFile "templates/tag.hamlet")
-    Right entries -> do
-      defaultLayout $(whamletFile "templates/tag.hamlet")
+  entries <- case res of
+    Left _ -> return []
+    Right entries -> return entries
+  defaultLayout $(whamletFile "templates/tag.hamlet")
 
 postTagR :: T.Text -> Handler Html
 postTagR tagname_ = do
+  let formGen = tagFormGen tagname_
+  ((formRes, widget), enctype) <- runFormPost formGen
+  (tagname, err) <- case formRes of
+    FormMissing -> return $ (tagname_, Just ("Error", "Form missing"))
+    FormFailure e -> return $ (tagname_, Just ("Error", T.append "Form failure: " $ T.show e))
+    FormSuccess newname -> do
+      renameRes <- liftIO $ renameTag tagname_ newname
+      case renameRes of
+        Left e -> return $ (tagname_, Just ("Error", e))
+        Right _ -> return $ (newname, Nothing)
+
   res <- liftIO $ getEntriesByTag tagname_
-  case res of
-    Left _ -> defaultLayout $ [whamlet||]
-    Right entries -> do
-      let formGen = tagFormGen tagname_
-      ((formRes, widget), enctype) <- runFormPost formGen
-      case formRes of
-        FormMissing -> defaultLayout [whamlet||]
-        FormFailure _ -> defaultLayout [whamlet||]
-        FormSuccess newname -> do
-          renameRes <- liftIO $ renameTag tagname_ newname
-          case renameRes of
-            Left _ -> defaultLayout [whamlet||]
-            Right _ -> do
-              let tagname = newname
-              defaultLayout $(whamletFile "templates/tag.hamlet")
+  entries <- case res of
+    Left _ -> return []
+    Right entries -> return entries
+
+  errW <- case err of
+    Nothing -> return mempty
+    Just (errMsg, errDesc) -> return $ errorWidget errMsg errDesc
+  defaultLayout $ errW <> $(whamletFile "templates/tag.hamlet")
