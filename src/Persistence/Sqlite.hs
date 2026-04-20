@@ -40,7 +40,7 @@ import Domain.Tag
 import Util.Cast
 
 db :: String
-db = "data/dev.db"
+db = "data/kanban.db"
 
 addEntry :: T.Text -> T.Text -> ColumnID -> IO (Either T.Text ())
 addEntry title desc colid = do
