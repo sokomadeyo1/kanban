@@ -1,0 +1,7 @@
+.board-columns {
+  display: flex;
+}
+
+.board-column {
+  flex: 1;
+}

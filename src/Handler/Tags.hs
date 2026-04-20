@@ -10,6 +10,7 @@ import Foundation
 import Usecase.GetTags
 import Usecase.NewTag
 import Yesod
+import Util.PrettyPrint
 
 tagForm :: Html -> MForm Handler (FormResult T.Text, Widget)
 tagForm = renderDivs $ areq textField "Tag name" Nothing

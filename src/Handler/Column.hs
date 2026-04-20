@@ -6,7 +6,6 @@ module Handler.Column (getColumnR, postColumnR) where
 
 import qualified Data.Text as T
 import Domain.Entry
-import Domain.Tag
 import Error
 import Foundation
 import Usecase.RenameColumn
