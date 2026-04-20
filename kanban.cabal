@@ -32,6 +32,7 @@ library
       Domain.Entry
       Domain.Tag
       Domain.User
+      Error
       Foundation
       Handler.Board
       Handler.Column

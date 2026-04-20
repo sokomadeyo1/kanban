@@ -1,0 +1,3 @@
+<div .error.container>
+  <h2 .error-msg>#{errMsg}
+  <p .error-msg>#{errDesc}
