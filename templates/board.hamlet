@@ -12,8 +12,9 @@
         <p>No columns.
       $else
         $forall (column, entries) <- entriesByColumn
-          <div .board-column>
-            <h3 .column-title>#{column}
+          <section .board-column>
+            <h3 .column-title>
+              <a href=@{ColumnR column}>#{column}
             <ul .entries>
               $forall (entry, tags) <- entries
                 <li .entry>
