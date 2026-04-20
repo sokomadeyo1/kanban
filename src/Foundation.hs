@@ -14,6 +14,7 @@ module Foundation where
 import qualified Data.Text as T
 import Text.Hamlet (hamletFile)
 import Yesod
+import Text.Lucius
 
 data App = App
 mkYesodData "App" $(parseRoutesFile "config/routes.yesodroutes")
@@ -24,7 +25,7 @@ instance Yesod App where
           , ("Columns", ColumnsR)
           , ("Tags", TagsR)
           ]
-    pc <- widgetToPageContent widget
+    pc <- widgetToPageContent $ (toWidget $(luciusFile "templates/style.lucius")) <> widget
     withUrlRenderer $(hamletFile "templates/default-layout.hamlet")
 
 -- Required for using forms
