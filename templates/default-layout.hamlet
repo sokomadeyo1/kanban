@@ -1,0 +1,19 @@
+$doctype 5
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>#{pageTitle pc}
+    ^{pageHead pc}
+  <body>
+
+    <!-- Navbar -->
+    <nav .navbar>
+      <div .container>
+        <ul .navbarlist>
+          $forall (label, route) <- navbarItems
+            <li .navbaritem>
+              <a href="@{route}">#{label}
+
+    <!-- Page contents -->
+    <div .container>
+      ^{pageBody pc}

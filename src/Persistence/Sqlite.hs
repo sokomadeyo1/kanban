@@ -14,6 +14,7 @@ module Persistence.Sqlite (
   getColumnEntries,
   getOneColumn,
   deleteColumn,
+  getConstraints,
   checkRestrict,
   restrictMove,
   allowMove,
@@ -23,6 +24,7 @@ module Persistence.Sqlite (
   getOneTag,
   tagEntry,
   untagEntry,
+  removeEntryTags,
   getEntriesTags,
   getEntriesByTag,
   getTaggedEntries,
@@ -172,6 +174,21 @@ deleteColumn columnid = do
     (Only columnid)
   return $ Right result
 
+getConstraints :: IO (Either T.Text [(T.Text, T.Text)])
+getConstraints = do
+  conn <- open db
+  result <- query_ conn
+    (read $ unwords
+      [ "\""
+      , "SELECT c1.columnTitle, c2.columnTitle"
+      , "FROM Restrict"
+      , "JOIN Column c1 ON fromColumn = c1.columnID"
+      , "JOIN Column c2 ON toColumn = c2.columnID"
+      , "\""
+      ]
+    )
+  return $ Right result
+
 checkRestrict :: ColumnID -> ColumnID -> IO (Either T.Text Bool)
 checkRestrict fromcol tocol = do
   conn <- open db
@@ -248,6 +265,15 @@ untagEntry entryid tagid = do
     (tagid, entryid)
   return $ Right result
 
+removeEntryTags :: EntryID -> IO (Either T.Text ())
+removeEntryTags entryid = do
+  conn <- open db
+  _ <- execute conn "PRAGMA foreign_keys = ON;" ()
+  result <- execute conn
+    "DELETE FROM EntriesTags WHERE entryID = ?"
+    (Only entryid)
+  return $ Right result
+
 getEntriesTags :: EntryID -> IO (Either T.Text [Tag])
 getEntriesTags entryid = do
   conn <- open db
@@ -256,20 +282,24 @@ getEntriesTags entryid = do
     (Only entryid)
   return $ Right tags
 
-getEntriesByTag :: TagID -> IO (Either T.Text [Entry])
+getEntriesByTag :: TagID -> IO (Either T.Text [(Entry, [Tag])])
 getEntriesByTag tagid = do
   conn <- open db
   entries <- query conn
     (read $ unwords
       [ "\""
-      , "SELECT entryID, entryTitle, entryDesc, columnTitle"
-      , "FROM Entry JOIN Column ON columnID = entryColumn"
-      , "NATURAL JOIN EntriesTags"
+      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle, json_group_array(Tag.tagID), json_group_array(tagName)"
+      , "FROM Entry"
+      , "JOIN Column ON columnID = entryColumn"
+      , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
+      , "LEFT JOIN Tag ON EntriesTags.tagID = Tag.tagID"
       , "WHERE EntriesTags.tagID = ?"
+      , "GROUP BY Entry.entryID"
+      , "ORDER BY columnID, Tag.tagID"
       , "\""
       ]
-    ) (Only tagid)
-  return $ Right entries
+    ) (Only tagid) :: IO [(EntryID, T.Text, T.Text, T.Text, String, String)]
+  return $ Right $ map castTaggedEntry entries
 
 getTaggedEntries :: IO (Either T.Text [(Entry, [Tag])])
 getTaggedEntries = do

@@ -1,4 +1,8 @@
-module Util.Cast (castTaggedEntry) where
+module Util.Cast (
+  castTaggedEntry,
+  getid,
+  maybeToMonoid,
+) where
 
 import qualified Data.Text as T
 import Domain.Entry
@@ -14,3 +18,10 @@ castTaggedEntry (eid, title, desc, col, tagids_, tagnames_) =
   tagnames = case tagnames_ of
     "[null]" -> []
     _ -> read tagnames_
+
+maybeToMonoid :: (Monoid m) => Maybe m -> m
+maybeToMonoid Nothing = mempty
+maybeToMonoid (Just x) = x
+
+getid :: Entry -> Int
+getid = (\(EntryID i) -> i) . entryID

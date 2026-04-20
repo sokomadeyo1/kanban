@@ -1,8 +1,6 @@
 module Main (main) where
 
-import Control.Monad (forever)
-import Repl (run)
+import Application
 
 main :: IO ()
-main = do
-  forever run
+main = appMain

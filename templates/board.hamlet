@@ -1,0 +1,29 @@
+<h1 .title>Board
+<h2>Create new entry
+<form method=post action=@{BoardR} enctype=#{enctype}>
+  ^{widget}
+  <button>Create
+<div .container>
+  $if null entries
+    <p>No entries.
+  $else
+    <div .board-columns>
+      $if null columns
+        <p>No columns.
+      $else
+        $forall (column, entries) <- entriesByColumn
+          <section .board-column>
+            <h3 .column-title>
+              <a href=@{ColumnR column}>#{column}
+            <ul .entries>
+              $forall (entry, tags) <- entries
+                <li .entry>
+                  <span .entry-id>#{pretty $ entryID entry}
+                  :
+                  <b .entry-title>#{entryTitle entry}
+                  <br>
+                  $forall tag <- tags
+                    <span .tag-name>#{pretty tag}
+                  <p .entry-contents>#{entryDesc entry}
+                  <a href=@{EntryR $ getid entry}>Edit entry
+                  <hr>

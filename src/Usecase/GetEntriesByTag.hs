@@ -7,7 +7,7 @@ import Domain.Entry
 import Domain.Tag
 import qualified Persistence.Sqlite as Persistence
 
-getEntriesByTag :: T.Text -> IO (Either T.Text [Entry])
+getEntriesByTag :: T.Text -> IO (Either T.Text [(Entry, [Tag])])
 getEntriesByTag tagname = do
   getTagID <- Persistence.getOneTag tagname
   case getTagID of

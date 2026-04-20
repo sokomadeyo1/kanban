@@ -25,12 +25,26 @@ source-repository head
 
 library
   exposed-modules:
+      Application
       Domain.Board
       Domain.Column
       Domain.Constraint
       Domain.Entry
       Domain.Tag
       Domain.User
+      Error
+      Foundation
+      Handler.Board
+      Handler.Column
+      Handler.Columns
+      Handler.Constr
+      Handler.DeleteColumn
+      Handler.DeleteConstraint
+      Handler.DeleteEntry
+      Handler.DeleteTag
+      Handler.Entry
+      Handler.Tag
+      Handler.Tags
       Persistence.Sqlite
       Usecase.AllowMove
       Usecase.DeleteColumn
@@ -38,6 +52,7 @@ library
       Usecase.DeleteTag
       Usecase.EditEntry
       Usecase.GetColumns
+      Usecase.GetConstraints
       Usecase.GetEntries
       Usecase.GetEntriesByTag
       Usecase.GetOneEntry
@@ -50,12 +65,14 @@ library
       Usecase.RenameEntry
       Usecase.RenameTag
       Usecase.RestrictMove
+      Usecase.SetEntryTags
       Usecase.ShowColumn
       Usecase.TagEntry
       Usecase.UntagEntry
       Util.Cast
       Util.Class
       Util.PrettyPrint
+      Util.Util
   other-modules:
       Paths_kanban
   autogen-modules:
@@ -66,16 +83,20 @@ library
   build-depends:
       base >=4.7 && <5
     , ghc
+    , shakespeare
     , shellwords
     , sqlite-simple
     , text
+    , yesod
+    , yesod-core
+    , yesod-form
   default-language: Haskell2010
 
 executable kanban-exe
   main-is: Main.hs
   other-modules:
-      Handler
-      Repl
+      Repl.Handler
+      Repl.Repl
       Paths_kanban
   autogen-modules:
       Paths_kanban
@@ -86,9 +107,13 @@ executable kanban-exe
       base >=4.7 && <5
     , ghc
     , kanban
+    , shakespeare
     , shellwords
     , sqlite-simple
     , text
+    , yesod
+    , yesod-core
+    , yesod-form
   default-language: Haskell2010
 
 test-suite kanban-test
@@ -105,7 +130,11 @@ test-suite kanban-test
       base >=4.7 && <5
     , ghc
     , kanban
+    , shakespeare
     , shellwords
     , sqlite-simple
     , text
+    , yesod
+    , yesod-core
+    , yesod-form
   default-language: Haskell2010
