@@ -72,6 +72,7 @@ library
       Util.Cast
       Util.Class
       Util.PrettyPrint
+      Util.Util
   other-modules:
       Paths_kanban
   autogen-modules:
