@@ -6,6 +6,7 @@ module Handler.Tag (getTagR, postTagR) where
 
 import qualified Data.Text as T
 import Domain.Entry
+import Domain.Tag
 import Foundation
 import Usecase.RenameTag
 import Usecase.GetEntriesByTag
