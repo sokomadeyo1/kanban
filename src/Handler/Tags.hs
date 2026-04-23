@@ -11,6 +11,7 @@ import Usecase.GetTags
 import Usecase.NewTag
 import Yesod
 import Util.PrettyPrint
+import Error
 
 tagForm :: Html -> MForm Handler (FormResult T.Text, Widget)
 tagForm = renderDivs $ areq textField "Tag name" Nothing
@@ -29,16 +30,20 @@ getTagsR = do
 postTagsR :: Handler Html
 postTagsR = do
   ((formRes, widget), enctype) <- runFormPost tagForm
-  case formRes of
-    FormMissing -> return ()
-    FormFailure _ -> return ()
+  err <- case formRes of
+    FormMissing -> return $ Just ("Error", "Form missing")
+    FormFailure e -> return $ Just ("Error", T.append "Form failure: " $ T.show e)
     FormSuccess q -> do
       _ <- liftIO $ newTag q
-      return ()
+      return Nothing
 
   tagRes <- liftIO getTags
   tags <- case tagRes of
     Left _ -> return []
     Right tags -> return tags
 
-  defaultLayout $(whamletFile "templates/tags.hamlet")
+  errW <- case err of
+    Nothing -> return mempty
+    Just (errMsg, errDesc) -> return $ errorWidget errMsg errDesc
+
+  defaultLayout $ errW <> $(whamletFile "templates/tags.hamlet")
