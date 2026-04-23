@@ -28,11 +28,11 @@ postConstraintR = do
   let colnames = map columnTitle columns
   ((res, _), _) <- runFormPost $ constrForm colnames
 
-  case res of
-    FormMissing -> return ()
-    FormFailure _ -> return ()
+  -- ignore errors in a POST method returning ()
+  _ <- case res of
     FormSuccess (from, to) -> do
       _ <- liftIO $ restrictMove from to
       return ()
+    _ -> return ()
 
   redirect ColumnsR

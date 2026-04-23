@@ -11,6 +11,7 @@ import Usecase.GetColumns
 import Usecase.GetConstraints
 import Usecase.NewColumn
 import Yesod
+import Error
 
 colForm :: Html -> MForm Handler (FormResult T.Text, Widget)
 colForm = renderDivs $ areq textField "Column Name" Nothing
@@ -46,12 +47,12 @@ getColumnsR = do
 postColumnsR :: Handler Html
 postColumnsR = do
   ((formRes, widgetCol), enctypeCol) <- runFormPost colForm
-  case formRes of
-    FormMissing -> return ()
-    FormFailure _ -> return ()
+  err <- case formRes of
+    FormMissing -> return $ Just ("Error", "Form missing")
+    FormFailure e -> return $ Just ("Error", T.append "Form failure: " $ T.show e)
     FormSuccess q -> do
       _ <- liftIO $ newColumn q
-      return ()
+      return Nothing
 
   colRes <- liftIO getColumns
   columns <- case colRes of
@@ -66,4 +67,8 @@ postColumnsR = do
   let colnames = map columnTitle columns
   ((_, widgetConstr), enctypeConstr) <- runFormPost $ constrForm colnames
 
-  defaultLayout $(whamletFile "templates/columns.hamlet")
+  errW <- case err of
+    Nothing -> return mempty
+    Just (errMsg, errDesc) -> return $ errorWidget errMsg errDesc
+
+  defaultLayout $ errW <> $(whamletFile "templates/columns.hamlet")
