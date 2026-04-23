@@ -76,7 +76,13 @@ handle (MoveEntry entryid colname) = do
   result <- moveEntry entryid colname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Moved entry", pretty entryid, "to the", colname, "column"]
+    Right _ -> TIO.putStrLn $ T.unwords 
+      [ "Moved entry"
+      , pretty entryid
+      , "to the"
+      , colname
+      , "column"
+      ]
 handle (RenameEntry entryid newname) = do
   result <- renameEntry entryid newname
   case result of
@@ -86,7 +92,10 @@ handle (EditEntry entryid newname) = do
   result <- editEntry entryid newname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Changed the description of entry", pretty entryid]
+    Right _ -> TIO.putStrLn $ T.unwords 
+      [ "Changed the description of entry"
+      , pretty entryid
+      ]
 handle (DeleteEntry entryid) = do
   result <- deleteEntry entryid
   case result of
@@ -166,17 +175,33 @@ handle (EntriesByTag tagname) = do
   result <- getEntriesByTag tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right entries -> TIO.putStr $ T.unlines [T.unwords ["Entries with", pretty $ (dummy tagname :: Tag), ":"], pretty entries]
+    Right entries -> TIO.putStr $ T.unlines 
+      [ T.unwords 
+        [ "Entries with"
+        , pretty $ (dummy tagname :: Tag)
+        , ":"
+        ]
+      , pretty entries
+      ]
 handle (TagEntry entryid tagname) = do
   result <- tagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Added", pretty $ (dummy tagname :: Tag), "to entry", pretty entryid]
+    Right _ -> TIO.putStrLn $ T.unwords
+      [ "Added"
+      , pretty $ (dummy tagname :: Tag)
+      , "to entry"
+      , pretty entryid
+      ]
 handle (UntagEntry entryid tagname) = do
   result <- untagEntry entryid tagname
   case result of
     Left e -> TIO.putStrLn e
-    Right _ -> TIO.putStrLn $ T.unwords ["Removed", pretty $ (dummy tagname :: Tag), "from entry", pretty entryid]
+    Right _ -> TIO.putStrLn $ T.unwords 
+      [ "Removed"
+      , pretty $ (dummy tagname :: Tag)
+      , "from entry", pretty entryid
+      ]
 handle (DeleteTag tagname) = do
   result <- deleteTag tagname
   case result of
