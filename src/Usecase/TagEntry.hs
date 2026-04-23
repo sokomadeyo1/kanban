@@ -25,6 +25,13 @@ tagEntry entryid tagname = do
             Right (Tag tagid _) -> Persistence.tagEntry entryid tagid
         Right (Tag tagid _) -> do
           checktagged <- Persistence.getEntriesTags entryid
-          case checktagged of
-            Right [] -> Persistence.tagEntry entryid tagid
-            _ -> return $ Left $ T.unwords [pretty entryid, "is already tagged with", pretty (dummy tagname :: Tag)]
+          tags <- case checktagged of
+            Right tags -> return tags
+            _ -> return []
+          if elem tagname (map tagName tags)
+            then return $ Left $ T.unwords
+              [ pretty entryid
+              , "is already tagged with"
+              , pretty (dummy tagname :: Tag)
+              ]
+            else Persistence.tagEntry entryid tagid
