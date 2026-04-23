@@ -33,7 +33,10 @@ entryFormGen ::
 entryFormGen entry columns alltags tags =
   let
     id_ = entryID entry
-    entryGen = (\title desc col tags_ -> (Entry id_ title (maybeToMonoid desc) col, (maybeToMonoid tags_)))
+    entryGen = (\title desc col tags_ ->
+      ( Entry id_ title (maybeToMonoid desc) col
+      , (maybeToMonoid tags_))
+      )
     columnlist = fmap (\x -> (x, x)) columns
     taglist = fmap (\x -> (x, x)) alltags
    in
@@ -90,13 +93,20 @@ postEntryR i = do
       ((formRes, widget), enctype) <- runFormPost formGen
       ((entry, tags), err) <- case formRes of
         FormMissing -> return $ ((entry_, tags_), Just ("Error", "Form missing"))
-        FormFailure e -> return $ ((entry_, tags_), Just ("Error", T.append "Form missing" $ T.show e))
+        FormFailure e -> return 
+          ( (entry_, tags_)
+          , Just ("Error", T.append "Form missing" $ T.show e)
+          )
         FormSuccess (e, ts) -> do
           renameRes <- liftIO $ renameEntry (EntryID i) (entryTitle e)
           editRes <- liftIO $ editEntry (EntryID i) (entryDesc e)
           moveRes <- liftIO $ moveEntry (EntryID i) (entryColName e)
           tagRes <- liftIO $ setEntryTags (EntryID i) ts
-          let entry = Entry (entryID entry_) (entryTitle e) (entryDesc e) (entryColName entry_)
+          entry <- return $ Entry
+            (entryID entry_)
+            (entryTitle e)
+            (entryDesc e)
+            (entryColName entry_)
           let tags = map dummy ts
           err <- case lefts [renameRes, editRes, moveRes, tagRes] of
             [] -> return Nothing

@@ -288,7 +288,8 @@ getEntriesByTag tagid = do
   entries <- query conn
     (read $ unwords
       [ "\""
-      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle, json_group_array(Tag.tagID), json_group_array(tagName)"
+      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle,"
+      , "json_group_array(Tag.tagID), json_group_array(tagName)"
       , "FROM Entry"
       , "JOIN Column ON columnID = entryColumn"
       , "JOIN"
@@ -311,7 +312,8 @@ getTaggedEntries = do
   entries <- query_ conn
     (read $ unwords
       [ "\""
-      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle, json_group_array(Tag.tagID), json_group_array(tagName)"
+      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle,"
+      , "json_group_array(Tag.tagID), json_group_array(tagName)"
       , "FROM Entry"
       , "JOIN Column ON columnID = entryColumn"
       , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
@@ -329,7 +331,8 @@ getEntriesByColumn colid = do
   entries <- query conn
     (read $ unwords
       [ "\""
-      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle, json_group_array(Tag.tagID), json_group_array(tagName)"
+      , "SELECT Entry.entryID, entryTitle, entryDesc, columnTitle,"
+      , "json_group_array(Tag.tagID), json_group_array(tagName)"
       , "FROM Entry"
       , "JOIN Column ON columnID = entryColumn"
       , "LEFT JOIN EntriesTags ON Entry.entryID = EntriesTags.entryID"
