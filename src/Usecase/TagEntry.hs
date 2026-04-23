@@ -29,5 +29,9 @@ tagEntry entryid tagname = do
             Right tags -> return tags
             _ -> return []
           if elem tagname (map tagName tags)
-            then return $ Left $ T.unwords [pretty entryid, "is already tagged with", pretty (dummy tagname :: Tag)]
+            then return $ Left $ T.unwords
+              [ pretty entryid
+              , "is already tagged with"
+              , pretty (dummy tagname :: Tag)
+              ]
             else Persistence.tagEntry entryid tagid
